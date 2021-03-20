@@ -5,45 +5,31 @@
 {% if filtered %}
 
 {% endif %}
-<style>
-    .card-columns {
-        display: inline-block;
-        column-count: 3;
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+        integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D"
+        crossorigin="anonymous" async></script>
 
-    @include media-breakpoint-only(lg) {
-        column-count: 4;
-    }
-    @include media-breakpoint-only(xl) {
-        column-count: 5;
-    }
-    }
-</style>
-<div class="container">
-    <div class="row equal">
-        {% for film in films %}
-        <div class="col-sm-4 d-flex">
-            <div class="card" style="width: auto;">
-                {% if film.poster_url == None %}
-                <img src="{{ url_for('static', filename='img/none_img.jpg') }}"
-                     class="card-img-top">
-                {% else %}
-                <img src="{{ film.poster_url }}" class="card-img-top">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ film.title }}</h5>
-                    <p class="card-text">Some quick example text to build on
-                        the
-                        card
-                        title
-                        and make up the bulk of the card's content.</p>
-
-                </div>
-                <div class="card-footer">
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
+<div class="row" data-masonry='{"percentPosition": true }'>
+    {% for film in films %}
+    <div class="col-sm-6 col-lg-4 mb-4"
+         style="position: absolute; left: 0; top: 0;">
+        <div class="card">
+            {% if film.poster_url == None %}
+            <img src="{{ url_for('static', filename='img/none_img.jpg') }}"
+                 class="card-img-top">
+            {% else %}
+            <img src="{{ film.poster_url }}" class="card-img-top">
+            {% endif %}
+            <div class="card-body">
+                <a href="/api/film/{{ film.id}}"><h5 class="card-title">{{
+                    film.title }}</h5></a>
+                <p class="card-text">Some quick example text to
+                    build
+                    on the card title
+                    and make up the bulk of the card's content.</p>
             </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
