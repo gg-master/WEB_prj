@@ -5,31 +5,75 @@
 {% if filtered %}
 
 {% endif %}
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
-        integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D"
-        crossorigin="anonymous" async></script>
-
-<div class="row" data-masonry='{"percentPosition": true }'>
-    {% for film in films %}
-    <div class="col-sm-6 col-lg-4 mb-4"
-         style="position: absolute; left: 0; top: 0;">
-        <div class="card">
-            {% if film.poster_url == None %}
-            <img src="{{ url_for('static', filename='img/none_img.jpg') }}"
-                 class="card-img-top">
-            {% else %}
-            <img src="{{ film.poster_url }}" class="card-img-top">
-            {% endif %}
-            <div class="card-body">
-                <a href="/api/film/{{ film.id}}"><h5 class="card-title">{{
-                    film.title }}</h5></a>
-                <p class="card-text">Some quick example text to
-                    build
-                    on the card title
-                    and make up the bulk of the card's content.</p>
+<link href="/static/assets/fonts/font-awesome.css" rel="stylesheet"
+      type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Roboto:700,400,300'
+      rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="/static/assets/css/owl.carousel.css"
+      type="text/css">
+<link rel="stylesheet" href="/static/assets/css/jquery.nouislider.min.css"
+      type="text/css">
+<link rel="stylesheet" href="/static/assets/css/style.css" type="text/css">
+<div id="page-wrapper">
+    <div class="container">
+        <div class="page-content">
+            <div class="masonry grid animate">
+                {% for film in films %}
+                <div class="item">
+                    <a href="/films/{{film.id}}"
+                       data-expand-width="col-9"
+                       data-transition-parent=".content-loader"
+                       data-external="true">
+                        <div class="inner">
+                            <div class="card">
+                                {% if film.poster_url == None %}
+                                <img src="/static/img/none_img.jpg"
+                                     class="card-img-top">
+                                {% else %}
+                                <img src="{{ film.poster_url }}"
+                                     class="card-img-top">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{
+                                        film.title }}</h5>
+                                    <p class="card-text">Some quick
+                                        example
+                                        text to
+                                        build
+                                        on the card title
+                                        and make up the bulk of the
+                                        card's
+                                        content.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-    {% endfor %}
 </div>
+</div>
+</div>
+<script type="text/javascript"
+        src="/static/assets/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript"
+        src="/static/assets/js/imagesloaded.pkgd.min.js"></script>
+
+<script type="text/javascript"
+        src="/static/assets/js/masonry.pkgd.min.js"></script>
+
+
+
+<script type="text/javascript"
+        src="/static/assets/js/bootstrap-select.js"></script>
+<script type="text/javascript" src="/static/assets/js/icheck.min.js"></script>
+<script type="text/javascript"
+        src="/static/assets/js/jquery.nouislider.all.min.js"></script>
+<script type="text/javascript"
+        src="/static/assets/js/jquery.inview.min.js"></script>
+<script type="text/javascript" src="/static/assets/js/functions.js"></script>
+<script type="text/javascript" src="/static/assets/js/custom.js"></script>
+
 {% endblock %}
