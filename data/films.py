@@ -32,3 +32,6 @@ class Film(SqlAlchemyBase, SerializerMixin):
     genre = orm.relation("Genre",
                          secondary="association_film_genres",
                          backref="films")
+
+    def __repr__(self):
+        return f"Film {self.title} {self.rating}"

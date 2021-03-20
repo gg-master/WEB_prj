@@ -11,18 +11,14 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 def start_page():
     # Инициализация сессии к бд
     # Получение списка фильмов
-    # db_sess = db_session.create_session()
-    # films = db_sess.query(Film).all()
-    # print(films)
-    films = []
+    db_sess = db_session.create_session()
+    recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
+
     return render_template('index.html', films=films)
 
 
 def main():
     db_session.global_init("db/database.db")
-    db_sess = db_session.create_session()
-    films = db_sess.query(Film).all()
-    print(films)
     app.run()
 
 
