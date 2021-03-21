@@ -5,75 +5,76 @@
 {% if filtered %}
 
 {% endif %}
-<link href="/static/assets/fonts/font-awesome.css" rel="stylesheet"
-      type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Roboto:700,400,300'
-      rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="/static/assets/css/owl.carousel.css"
-      type="text/css">
-<link rel="stylesheet" href="/static/assets/css/jquery.nouislider.min.css"
-      type="text/css">
-<link rel="stylesheet" href="/static/assets/css/style.css" type="text/css">
-<div id="page-wrapper">
-    <div class="container">
-        <div class="page-content">
-            <div class="masonry grid animate">
-                {% for film in films %}
-                <div class="item">
-                    <a href="/films/{{film.id}}"
-                       data-expand-width="col-9"
-                       data-transition-parent=".content-loader"
-                       data-external="true">
-                        <div class="inner">
-                            <div class="card">
-                                {% if film.poster_url == None %}
-                                <img src="/static/img/none_img.jpg"
-                                     class="card-img-top">
-                                {% else %}
-                                <img src="{{ film.poster_url }}"
-                                     class="card-img-top">
-                                {% endif %}
-                                <div class="card-body">
-                                    <h5 class="card-title">{{
-                                        film.title }}</h5>
-                                    <p class="card-text">Some quick
-                                        example
-                                        text to
-                                        build
-                                        on the card title
-                                        and make up the bulk of the
-                                        card's
-                                        content.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
+
+<link rel='stylesheet' type='text/css' href="/static/css/main_window_grid.css">
+<style>
+    a {
+        -moz-transition: 0.4s;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        color: #626262;
+    }
+
+    a:hover, a:active, a:focus {
+        color: #009cff;
+        text-decoration: none;
+        outline: none !important;
+    }
+
+    a:active {
+        -moz-box-shadow: 0 0 0 0 transparent;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
+    }
+    .item {
+        -moz-perspective: 1000px;
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+        -moz-transition: 0.8s;
+        -webkit-transition: 0.8s;
+        transition: 0.8s;
+        display: block;
+        width: 100%;
+    }
+
+    .item > a {
+        -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+        -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+        display: block;
+    }
+
+    .item > a:hover {
+        -moz-box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+    }
+</style>
+<div class="container">
+    <div class="card-columns">
+        {% for film in films %}
+        <div class="card">
+            <div class="item">
+                <a href="/films/{{film.id}}">
+                    {% if film.poster_url == None %}
+                    <img src="/static/img/none_img.jpg"
+                         class="card-img-top">
+                    {% else %}
+                    <img src="{{ film.poster_url }}"
+                         class="card-img-top">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{
+                            film.title }}</h5>
+                        <p class="card-text">Some quick
+                            example
+                            text to
+                            build</p>
+                    </div>
+                </a>
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
-</div>
-</div>
-<script type="text/javascript"
-        src="/static/assets/js/jquery-2.1.0.min.js"></script>
-<script type="text/javascript"
-        src="/static/assets/js/imagesloaded.pkgd.min.js"></script>
-
-<script type="text/javascript"
-        src="/static/assets/js/masonry.pkgd.min.js"></script>
-
-
-
-<script type="text/javascript"
-        src="/static/assets/js/bootstrap-select.js"></script>
-<script type="text/javascript" src="/static/assets/js/icheck.min.js"></script>
-<script type="text/javascript"
-        src="/static/assets/js/jquery.nouislider.all.min.js"></script>
-<script type="text/javascript"
-        src="/static/assets/js/jquery.inview.min.js"></script>
-<script type="text/javascript" src="/static/assets/js/functions.js"></script>
-<script type="text/javascript" src="/static/assets/js/custom.js"></script>
-
 {% endblock %}
