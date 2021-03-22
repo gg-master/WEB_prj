@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template, request
-# from flask_ngrok import run_with_ngrok
+from flask_ngrok import run_with_ngrok
 
 from data import db_session
 from data.films import Film
@@ -27,7 +27,8 @@ def start_page():
         print([i for i in request.form])
         print([request.form.get(i) for i in request.form])
         # print(request.args.get(filter_list[0]))
-        return render_template('index.html', films=films, filter=filter_dct)
+        return render_template('index.html', films=films, filter=filter_dct,
+                               filtered=True)
 
     recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
     return render_template('index.html',
