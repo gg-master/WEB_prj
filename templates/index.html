@@ -1,12 +1,129 @@
 {% extends "base.html" %}
-
+{% block nav_block %}
+<div class="form-inline">
+    <button class="navbar-toggler bg-light" type="button"
+            data-toggle="collapse"
+            data-target="#navbarToggleExternalContent"
+            aria-controls="navbarToggleExternalContent"
+            aria-expanded="false" aria-label="Toggle navigation"
+            style="margin-right: 20px">Фильтр
+    </button>
+    <form id='search_filter_form' action="" method="post">
+        <input class="form-control mr-sm-2" type="search"
+               placeholder="Название фильма" name="search">
+        <button class="btn my-2 my-sm-0 bg-warning">Поиск
+        </button>
+    </form>
+</div>
+{% endblock %}
 {% block content %}
+<div class="collapse" id="navbarToggleExternalContent">
+    <div class="card card-body"
+         style="margin-top: 1%; padding-top: 1%"
+         data-toggle="tooltip"
+         title="Установите галочку, чтобы применить фильтр">
+        <div class="container">
+            <div class="row justify-content-end align-items-start">
+                <div class="col-4" align="center">
+                    <h3 class="card-title">Настройки фильтра</h3>
+                </div>
+                <div class="col-4" align="right">
+                    <button class="navbar-toggler" type="button"
+                            data-toggle="collapse"
+                            data-target="#navbarToggleExternalContent"
+                            aria-controls="navbarToggleExternalContent"
+                            aria-expanded="false"
+                            style="align-self: flex-end">
+                        <img src="/static/img/close.svg" alt="" width="20"
+                             height="20">
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text"
+                       for="inputGroupSelect01">
+                    <input type="checkbox"
+                           aria-label="chb1" name="cb1"
+                           form="search_filter_form">
+                </label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01"
+                    style="margin-right: 25px" form="search_filter_form"
+                    name='cbv1'>
+                <option selected value="#">Выбрать год</option>
+                {% for item in filter.year %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+            </select>
 
+            <div class="input-group-prepend">
+                <label class="input-group-text"
+                       for="inputGroupSelect02">
+                    <input type="checkbox"
+                           aria-label="Checkbox" name="cb2"
+                           form="search_filter_form">
+                </label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect02"
+                    style="margin-right: 25px" form="search_filter_form"
+                    name='cbv2'>
+                <option selected value="#">Выбрать жанр</option>
+                {% for item in filter.genre %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+            </select>
+
+            <div class="input-group-prepend">
+                <label class="input-group-text"
+                       for="inputGroupSelect03">
+                    <input type="checkbox"
+                           aria-label="Checkbox" name="cb3"
+                           form="search_filter_form">
+                </label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect03"
+                    style="margin-right: 25px" form="search_filter_form"
+                    name='cbv3'>
+                <option selected value="#">Выбрать рейтинг</option>
+                {% for item in filter.rating %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+            </select>
+
+            <div class="input-group-prepend">
+                <label class="input-group-text"
+                       for="inputGroupSelect04">
+                    <input type="checkbox"
+                           aria-label="Checkbox for following text input"
+                           name="cb4" form="search_filter_form">
+                </label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect04"
+                    form="search_filter_form" name='cbv4'>
+                <option selected value="#">Выбрать режиссера</option>
+                {% for item in filter.producer %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="card-body" style="padding-bottom: 0; padding-top: 0;"
+             align="right">
+            <button class="btn btn-primary" form="search_filter_form">Начать
+                поиск
+            </button>
+        </div>
+
+    </div>
+</div>
 {% if filtered %}
 
 {% endif %}
 
-<link rel='stylesheet' type='text/css' href="/static/css/main_window_grid.css">
+<link rel='stylesheet' type='text/css'
+      href="/static/css/main_window.css">
 <style>
     a {
         -moz-transition: 0.4s;
@@ -26,6 +143,7 @@
         -webkit-box-shadow: 0 0 0 0 transparent;
         box-shadow: 0 0 0 0 transparent;
     }
+
     .item {
         -moz-perspective: 1000px;
         -webkit-perspective: 1000px;
@@ -33,8 +151,9 @@
         -moz-transition: 0.8s;
         -webkit-transition: 0.8s;
         transition: 0.8s;
-        display: block;
+        /*display: block;*/
         width: 100%;
+        height: 100%;
     }
 
     .item > a {
@@ -42,16 +161,24 @@
         -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
         display: block;
+        height: 100%;
     }
 
     .item > a:hover {
         -moz-box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
         -webkit-box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
         box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+        height: 100%;
+    }
+
+    .card-deck {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: .5rem;
     }
 </style>
-<div class="container">
-    <div class="card-columns">
+<div class="container" style="padding-top: 1%; padding-bottom: 1%">
+    <div class="card-deck">
         {% for film in films %}
         <div class="card">
             <div class="item">
