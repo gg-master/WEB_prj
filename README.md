@@ -1,2 +1,2 @@
 # WEB_prj
-Web project by Anatoly Korshunov, Oleg Roldugin.
+Web project by Anatoly Korshunov, Oleg Roldugin, Ksenia Bondarenko
