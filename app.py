@@ -1,13 +1,13 @@
 import os
 
 from flask import Flask, render_template, request
-from flask_ngrok import run_with_ngrok
+# from flask_ngrok import run_with_ngrok
 
 from data import db_session
 from data.films import Film
 
 app = Flask(__name__)
-run_with_ngrok(app)
+# run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
@@ -16,19 +16,23 @@ def start_page():
     # Инициализация сессии к бд
     # Получение списка фильмов
     print(request.method)
-    #
-    filter_list = [i for i in request.args]
-    print(filter_list)
-
-    print([i for i in request.form])
-    print([request.form.get(i) for i in request.form])
-    # print(request.args.get(filter_list[0]))
     db_sess = db_session.create_session()
-    recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
     films = db_sess.query(Film).all()
-    filter_dct = {'year': ['2021', '2022', '2023'], 'genre': ['Comedy'], 'rating': ['9.1', '2.1'], 'producer': []}
+    filter_dct = {'year': ['2021', '2022', '2023'], 'genre': ['Comedy'],
+                  'rating': ['9.1', '2.1'], 'producer': []}
+    if request.method == 'POST':
+        filter_list = [i for i in request.args]
+        print(filter_list)
 
-    return render_template('index.html', films=films, filter=filter_dct)
+        print([i for i in request.form])
+        print([request.form.get(i) for i in request.form])
+        # print(request.args.get(filter_list[0]))
+        return render_template('index.html', films=films, filter=filter_dct)
+
+    recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
+    return render_template('index.html',
+                           films=films, filter=filter_dct,
+                           recommended_films=recommended_films, filtered=False)
 
 
 def main():
