@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 
@@ -16,8 +18,10 @@ class Film(SqlAlchemyBase, SerializerMixin):
     # Можно попробовать добавить отдельную таблицу с актерами
     actors = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     producer = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    # Дата премьеры
+    premiere = sqlalchemy.Column(sqlalchemy.DateTime,
+                                 default=datetime.now)
 
-    year = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     duration = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 

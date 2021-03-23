@@ -33,7 +33,7 @@ def start_page():
     recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
     return render_template('index.html',
                            films=films, filter=filter_dct,
-                           recommended_films=recommended_films, filtered=False)
+                           recommended_films=recommended_films, new_films=recommended_films, filtered=False)
 
 
 def main():

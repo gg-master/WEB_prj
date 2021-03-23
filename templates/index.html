@@ -17,6 +17,7 @@
 </div>
 {% endblock %}
 {% block content %}
+
 <div class="collapse" id="navbarToggleExternalContent">
     <div class="card card-body"
          style="margin-top: 1%; padding-top: 1%; opacity: 95%"
@@ -122,7 +123,7 @@
 <ul class="container" style="padding-right: 0.5%; margin-top: 2%">
     <li style="display: inline-block; width: 48%; height: 100%">
         <div class="card"
-             style="background-color: transparent;
+             style="background-color: rgba(150, 150, 150, 0.5);
              color: white; border-color: white;">
             <div class="card-body">
                 <h5 class="card-title"
@@ -131,13 +132,13 @@
                 <div id="carouselTopWatchers" class="carousel slide"
                      data-ride="carousel">
                     <div class="carousel-inner rounded">
-                        {% for film in recommended_films %}
+                        {% for film in new_films %}
                         {% if loop.first%}
                         <div class="carousel-item active"
-                             data-interval="5000">
+                             data-interval="6000">
                             {% else %}
                             <div class="carousel-item"
-                                 data-interval="5000">
+                                 data-interval="6000">
                                 {% endif %}
                                 <div class="toplayer rounded"
                                      align="center">
@@ -154,10 +155,9 @@
                                              alt=""
                                              style="height: 200px;">
                                         {% endif %}
-                                        <div class="carousel-caption d-none d-md-block">
-                                            <h5>{{film.title}}</h5>
-                                        </div>
                                     </a>
+                                    <h5 style="margin-top: 1%; margin-bottom: 0">
+                                        {{film.title}}</h5>
                                 </div>
                             </div>
                             {% endfor %}
@@ -183,7 +183,7 @@
     </li>
     <li style="display: inline-block; width: 47.8%; height: 100%; margin-left: 2.9%">
         <div class="card"
-             style="background-color: transparent;
+             style="background-color: rgba(150, 150, 150, 0.5);
              color: white; border-color: white;">
             <div class="card-body">
                 <h5 class="card-title"
@@ -215,10 +215,9 @@
                                              alt=""
                                              style="height: 200px;">
                                         {% endif %}
-                                        <div class="carousel-caption d-none d-md-block">
-                                            <h5>{{film.title}}</h5>
-                                        </div>
                                     </a>
+                                    <h5 style="margin-top: 1%; margin-bottom: 0">
+                                        {{film.title}}</h5>
                                 </div>
                             </div>
                             {% endfor %}
@@ -315,12 +314,10 @@
                          class="card-img-top" alt="">
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{
-                            film.title }}</h5>
-                        <p class="card-text">Some quick
-                            example
-                            text to
-                            build</p>
+                        <h5 class="card-title">{{film.title }}</h5>
+
+                        <p class="card-text">{{film.genre|join(', ')}}</p>
+                        <p class="card-text" align="left">{{film.premiere.year}}</p>
                     </div>
                 </a>
             </div>
