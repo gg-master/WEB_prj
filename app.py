@@ -2,13 +2,17 @@ import os
 
 from flask import Flask, render_template, request
 from flask_ngrok import run_with_ngrok
+from flask_restful import Api
 
+from api import films_resource
 from data import db_session
 from data.films import Film
 
 app = Flask(__name__)
+api = Api(app)
 # run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+# app.config['DEBUG'] = True
 
 
 @app.route('/', methods=['GET', "POST"])
@@ -33,12 +37,15 @@ def start_page():
     recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
     return render_template('index.html',
                            films=films, filter=filter_dct,
-                           recommended_films=recommended_films, new_films=recommended_films, filtered=False)
+                           recommended_films=recommended_films,
+                           new_films=recommended_films, filtered=False)
 
 
 def main():
     db_session.global_init("db/database.db")
-
+    api.add_resource(films_resource.FilmResource,
+                     '/api/films/<int:film_id>')
+    api.add_resource(films_resource.FilmListResource, '/api/films')
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
     app.run()

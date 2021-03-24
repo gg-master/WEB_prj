@@ -1,4 +1,6 @@
 import sqlalchemy
+from sqlalchemy_serializer import SerializerMixin
+
 from .db_session import SqlAlchemyBase
 
 assoc_film_genre = sqlalchemy.Table(
@@ -11,11 +13,14 @@ assoc_film_genre = sqlalchemy.Table(
 )
 
 
-class Genre(SqlAlchemyBase):
+class Genre(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'genres'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                            autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    serialize_only = ('name',)
+
+    serialize_types = (name, lambda x: x.value)
 
     def __repr__(self):
         return self.name

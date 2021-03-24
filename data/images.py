@@ -14,3 +14,4 @@ class Image(SqlAlchemyBase, SerializerMixin):
     film_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("films.id"))
     film = orm.relation("Film")
+    serialize_only = ('image_url',)
