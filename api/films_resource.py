@@ -9,13 +9,26 @@ from data.films import Film
 from data.images import Image
 from misc.aborts import abort_if_film_not_found
 
+parser = reqparse.RequestParser()
+parser.add_argument('title', required=True)
+parser.add_argument('duration', required=True, type=int)
+parser.add_argument('rating', type=float, default=0.0)
+parser.add_argument('actors', default='', type=str)
+parser.add_argument('premiere', default='')
+parser.add_argument('producer', default='')
+parser.add_argument('description', default='')
+parser.add_argument('poster_url', default=None)
+parser.add_argument('trailer_url', default=None)
+parser.add_argument('watchers', type=int, default=0)
+parser.add_argument('images', action='append', type=list, default=[])
+parser.add_argument('genres', action='append', type=list, default=[])
+
 
 class FilmResource(Resource):
     def get(self, film_id):
         abort_if_film_not_found(film_id)
         session = db_session.create_session()
         film = session.query(Film).get(film_id)
-        print(film.genre)
         return jsonify({'film': film.to_dict(
             only=(
                 'title', 'rating', 'actors', 'producer', 'premiere',
@@ -29,21 +42,6 @@ class FilmResource(Resource):
         session.delete(film)
         session.commit()
         return jsonify({'success': 'OK'})
-
-
-parser = reqparse.RequestParser()
-parser.add_argument('title', required=True)
-parser.add_argument('rating', type=float, default=0.0)
-parser.add_argument('actors', required=True)
-parser.add_argument('producer', required=True)
-parser.add_argument('description', default='')
-parser.add_argument('premiere', default='')
-parser.add_argument('duration', required=True, type=int)
-parser.add_argument('poster_url', default=None)
-parser.add_argument('trailer_url', default=None)
-parser.add_argument('watchers', type=int, default=0)
-parser.add_argument('images', type=list, default=[])
-parser.add_argument('genres', action='append', default=[])
 
 
 class FilmListResource(Resource):

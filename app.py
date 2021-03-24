@@ -1,10 +1,11 @@
 import os
+import pprint
 
 from flask import Flask, render_template, request
 from flask_ngrok import run_with_ngrok
 from flask_restful import Api
 
-from api import films_resource
+from api import films_resource, films_api
 from data import db_session
 from data.films import Film
 
@@ -12,6 +13,8 @@ app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+
 # app.config['DEBUG'] = True
 
 
@@ -20,29 +23,20 @@ def start_page():
     # Инициализация сессии к бд
     # Получение списка фильмов
     print(request.method)
-    db_sess = db_session.create_session()
-    films = db_sess.query(Film).all()
-    filter_dct = {'year': ['2021', '2022', '2023'], 'genre': ['Comedy'],
-                  'rating': ['9.1', '2.1'], 'producer': []}
+    filter_dct = films_api.get_filter_data().json['filter_data']
     if request.method == 'POST':
-        filter_list = [i for i in request.args]
-        print(filter_list)
-
-        print([i for i in request.form])
-        print([request.form.get(i) for i in request.form])
-        # print(request.args.get(filter_list[0]))
-        return render_template('index.html', films=films, filter=filter_dct,
-                               filtered=True)
-
-    recommended_films = db_sess.query(Film).filter(Film.rating > 8.0).all()
+        films = films_api.get_filtered_films().json['films']
+        return render_template(
+            'index.html', films=films, filter=filter_dct, filtered=True)
+    films = films_resource.FilmListResource().get().json['films']
     return render_template('index.html',
-                           films=films, filter=filter_dct,
-                           recommended_films=recommended_films,
-                           new_films=recommended_films, filtered=False)
+                           films=films, filter=filter_dct, filtered=False,
+                           **films_api.get_films_recommendations().json)
 
 
 def main():
     db_session.global_init("db/database.db")
+    app.register_blueprint(films_api.blueprint)
     api.add_resource(films_resource.FilmResource,
                      '/api/films/<int:film_id>')
     api.add_resource(films_resource.FilmListResource, '/api/films')

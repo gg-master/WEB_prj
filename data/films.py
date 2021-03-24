@@ -19,7 +19,7 @@ class Film(SqlAlchemyBase, SerializerMixin):
     actors = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     producer = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     # Дата премьеры
-    premiere = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    premiere = sqlalchemy.Column(sqlalchemy.DATE, nullable=True)
 
     duration = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -33,7 +33,7 @@ class Film(SqlAlchemyBase, SerializerMixin):
     comments = orm.relation("Comment", back_populates='film')
 
     genre = orm.relation("Genre",
-                         secondary="association_film_genres",)
+                         secondary="association_film_genres", )
 
     def __repr__(self):
         return f"Film {self.title} {self.rating}"

@@ -14,13 +14,11 @@ assoc_film_genre = sqlalchemy.Table(
 
 
 class Genre(SqlAlchemyBase, SerializerMixin):
+    serialize_only = ('name',)
     __tablename__ = 'genres'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                            autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    serialize_only = ('name',)
-
-    serialize_types = (name, lambda x: x.value)
 
     def __repr__(self):
         return self.name

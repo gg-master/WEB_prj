@@ -10,7 +10,7 @@
     </button>
     <form id='search_filter_form' action="" method="post">
         <input class="form-control mr-sm-2" type="search"
-               placeholder="Название фильма" name="search">
+               placeholder="Название фильма" name="title">
         <button class="btn my-2 my-sm-0 bg-warning">Поиск
         </button>
     </form>
@@ -20,7 +20,8 @@
 
 <div class="collapse" id="navbarToggleExternalContent">
     <div class="card card-body"
-         style="margin-top: 1%; padding-top: 1%; opacity: 95%"
+         style="margin-top: 1%; padding-top: 1%;
+          background-color: rgba(255, 255, 255, 0.9)"
          data-toggle="tooltip"
          title="Установите галочку, чтобы применить фильтр">
         <div class="container">
@@ -46,15 +47,15 @@
                 <label class="input-group-text"
                        for="inputGroupSelect01">
                     <input type="checkbox"
-                           aria-label="chb1" name="cb1"
+                           aria-label="chb1" name="year_cb"
                            form="search_filter_form">
                 </label>
             </div>
             <select class="custom-select" id="inputGroupSelect01"
                     style="margin-right: 25px" form="search_filter_form"
-                    name='cbv1'>
+                    name='year'>
                 <option selected value="#">Выбрать год</option>
-                {% for item in filter.year %}
+                {% for item in filter.years %}
                 <option value="{{item}}">{{item}}</option>
                 {% endfor %}
             </select>
@@ -63,15 +64,15 @@
                 <label class="input-group-text"
                        for="inputGroupSelect02">
                     <input type="checkbox"
-                           aria-label="Checkbox" name="cb2"
+                           aria-label="Checkbox" name="genre_cb"
                            form="search_filter_form">
                 </label>
             </div>
             <select class="custom-select" id="inputGroupSelect02"
                     style="margin-right: 25px" form="search_filter_form"
-                    name='cbv2'>
+                    name='genre'>
                 <option selected value="#">Выбрать жанр</option>
-                {% for item in filter.genre %}
+                {% for item in filter.genres %}
                 <option value="{{item}}">{{item}}</option>
                 {% endfor %}
             </select>
@@ -80,15 +81,15 @@
                 <label class="input-group-text"
                        for="inputGroupSelect03">
                     <input type="checkbox"
-                           aria-label="Checkbox" name="cb3"
+                           aria-label="Checkbox" name="duration_cb"
                            form="search_filter_form">
                 </label>
             </div>
             <select class="custom-select" id="inputGroupSelect03"
                     style="margin-right: 25px" form="search_filter_form"
-                    name='cbv3'>
-                <option selected value="#">Выбрать рейтинг</option>
-                {% for item in filter.rating %}
+                    name='duration'>
+                <option selected value="#">Выбрать длительность</option>
+                {% for item in filter.duration %}
                 <option value="{{item}}">{{item}}</option>
                 {% endfor %}
             </select>
@@ -98,11 +99,11 @@
                        for="inputGroupSelect04">
                     <input type="checkbox"
                            aria-label="Checkbox for following text input"
-                           name="cb4" form="search_filter_form">
+                           name="producer_cb" form="search_filter_form">
                 </label>
             </div>
             <select class="custom-select" id="inputGroupSelect04"
-                    form="search_filter_form" name='cbv4'>
+                    form="search_filter_form" name='producer'>
                 <option selected value="#">Выбрать режиссера</option>
                 {% for item in filter.producer %}
                 <option value="{{item}}">{{item}}</option>
@@ -192,7 +193,7 @@
                 <div id="carouselNewFilm" class="carousel slide"
                      data-ride="carousel">
                     <div class="carousel-inner rounded">
-                        {% for film in recommended_films %}
+                        {% for film in most_watched_films %}
                         {% if loop.first%}
                         <div class="carousel-item active"
                              data-interval="5000">
@@ -315,9 +316,10 @@
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{film.title }}</h5>
-
-                        <p class="card-text">{{film.genre|join(', ')}}</p>
-                        <p class="card-text" align="left">{{film.premiere.year}}</p>
+                        <p class="card-text">{{ film.genre|map(attribute='name')|join(', ') }}</p>
+                        {% if film.premiere != None %}
+                            <p class="card-text">{{film.premiere.split('-')[0]}}</p>
+                        {% endif %}
                     </div>
                 </a>
             </div>
