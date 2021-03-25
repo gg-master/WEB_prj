@@ -29,6 +29,8 @@ class FilmResource(Resource):
         abort_if_film_not_found(film_id)
         session = db_session.create_session()
         film = session.query(Film).get(film_id)
+        film.watchers += 1
+        session.commit()
         return jsonify({'film': film.to_dict(
             only=(
                 'id', 'title', 'rating', 'actors', 'producer', 'premiere',

@@ -7,14 +7,20 @@
         margin-right: auto;
         margin-left: auto;
         bottom: 0;
-        height: 100vh;
         width: 100%;
+        height: 100%;
+        min-height: 100vh;
         background-color: #212226;
         color: white;
     }
 
     .text_param {
         color: white;
+    }
+
+    .text_alignment {
+        text-align: right !important;
+        font-size: .9rem;
     }
 
     .movie-description-block {
@@ -27,9 +33,13 @@
         display: block;
     }
 
-    .description {
+    .description_short {
         margin-left: 2%;
         margin-top: 2%;
+    }
+
+    .description {
+        margin-top: 4%;
     }
 
     .premiere-block {
@@ -49,39 +59,81 @@
     </div>
     <div class="d-flex flex-row">
         <div class="d-flex">
+            {% if film.poster_url == None %}
+            <img src="/static/img/none_img.jpg"
+                 class="movie-vposter" alt="{{film.title}}">
+            {% else %}
             <img src="{{film.poster_url}}" class="movie-vposter"
                  alt="{{film.title}}">
+            {% endif %}
         </div>
-        <div class="d-flex description">
+        <div class="d-flex description_short">
             <div>
                 <div class="d-flex flex-column">
                     <div>
-                        <button type="button" class="btn btn-outline-success">
+                        <a href="/timetable/{{film.id}}" type="button"
+                           class="btn btn-outline-success">
                             Купить билет
-                        </button>
+                        </a>
                     </div>
-                    <div>
+                    <div style="margin-top: 5%">
                         <div class="d-flex flex-column">
-                            <div>
+                            <div style="margin-bottom: 2%">
                                 <div class="d-flex">
-                                    <div class="movie-desc-left text_param"
-                                         style="text-align: right!important;" align="right">
-                                        Продолжительность:</div>
+                                    <div class="movie-desc-left text_param text_alignment">
+                                        Продолжительность:
+                                    </div>
                                     <div style="padding-right: 1rem!important;"></div>
                                     <div class="text_param">
-                                        {{film.duration}}
+                                        {{film.duration}} минут
                                     </div>
                                 </div>
                             </div>
-                            <div>
+                            <div style="margin-bottom: 2%">
                                 <div class="d-flex">
-                                    <div class="movie-desc-left text_param"
-                                         style="text-align: right!important;" align="right">
-                                        Жанр:</div>
+                                    <div class="movie-desc-left text_param text_alignment">
+                                        Жанр:
+                                    </div>
                                     <div style="padding-right: 1rem!important;"></div>
                                     <div class="text_param">
                                         {{film.genre|map(attribute='name')|map('capitalize')|join(',
                                         ')}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 2%">
+                                <div class="d-flex">
+                                    <div class="movie-desc-left text_param text_alignment">
+                                        Режиссер:
+                                    </div>
+                                    <div style="padding-right: 1rem!important;"></div>
+                                    <div class="text_param">
+                                        {{film.producer}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 2%">
+                                <div class="d-flex">
+                                    <div class="movie-desc-left text_param text_alignment">
+                                        Актеры:
+                                    </div>
+                                    <div style="padding-right: 1rem!important;"></div>
+                                    <div class="text_param">
+                                        {{film.actors}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 2%">
+                                <div class="d-flex">
+                                    <div class="movie-desc-left text_param text_alignment">
+                                        <object data="/static/img/eyei-24px.svg"
+                                                width="24"
+                                                height="24"></object>
+                                    </div>
+                                    <div style="padding-right: 1rem!important;"></div>
+                                    <div class="text_param">
+                                        {{film.watchers}}
                                     </div>
                                 </div>
                             </div>
@@ -95,13 +147,73 @@
 <div class="top_offset">
     <div class="container">
         <div class="d-flex">
-            <div class="premiere-block" style="margin-top: 2%;">
+            <div class="premiere-block"
+                 style="margin-top: 2%; margin-bottom: 4%">
                 <div class="d-flex flex-column">
+                    {% if film.premiere != None %}
                     <h6 class="text_param">Дата
                         премьеры - {{film.premiere}}</h6>
+                    {% endif %}
                 </div>
             </div>
         </div>
+        <div class="d-flex description">
+            <h6>Описание</h6>
+        </div>
+        <div class="d-flex" style="margin-top: 1%">
+            <div>
+                {{film.description}}
+            </div>
+        </div>
+        {% if film.images %}
+        <h5 align="center" style="margin-top: 5%">Кадры из фильма</h5>
+        <div id="carouselFilmImages" class="carousel slide"
+             data-ride="carousel" style="margin-top: 5%">
+            <div class="carousel-inner rounded">
+                {% for image in film.images %}
+                {% if loop.first%}
+                <div class="carousel-item active"
+                     data-interval="5000">
+                    {% else %}
+                    <div class="carousel-item"
+                         data-interval="5000">
+                        {% endif %}
+                        <div class="toplayer rounded"
+                             align="center">
+                            <img src="{{ image.image_url }}"
+                                 class="img-fluid rounded"
+                                 alt=""
+                                 style="width: 1070px; height: 580px">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev"
+                   href="#carouselFilmImages"
+                   role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon"
+                          aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next"
+                   href="#carouselFilmImages"
+                   role="button" data-slide="next">
+                    <span class="carousel-control-next-icon"
+                          aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% if film.trailer_url != None %}
+        <h5 align="center" style="margin-top: 5%; margin-bottom: 2%">
+            Трейлер</h5>
+        <div align="center">
+            <iframe src="{{film.trailer_url}}" width="1070" height="580"
+                    frameborder="0"
+                    allowfullscreen class="rounded"></iframe>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
