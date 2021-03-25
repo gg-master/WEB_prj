@@ -7,7 +7,6 @@ from flask_restful import Api
 
 from api import films_resource, films_api
 from data import db_session
-from data.films import Film
 
 app = Flask(__name__)
 api = Api(app)
@@ -22,7 +21,6 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 def start_page():
     # Инициализация сессии к бд
     # Получение списка фильмов
-    print(request.method)
     filter_dct = films_api.get_filter_data().json['filter_data']
     if request.method == 'POST':
         films = films_api.get_filtered_films().json['films']
@@ -32,6 +30,12 @@ def start_page():
     return render_template('index.html',
                            films=films, filter=filter_dct, filtered=False,
                            **films_api.get_films_recommendations().json)
+
+
+@app.route('/films/<int:film_id>', methods=['GET'])
+def film_description(film_id):
+    return render_template('film_description.html',
+                           **films_resource.FilmResource().get(film_id).json)
 
 
 def main():

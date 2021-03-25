@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block content %}
+<style rel="stylesheet" type="text/css">
+    .top_offset {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        bottom: 0;
+        height: 100vh;
+        width: 100%;
+        background-color: #212226;
+        color: white;
+    }
+
+    .text_param {
+        color: white;
+    }
+
+    .movie-description-block {
+        height: 26rem;
+    }
+
+    .movie-vposter {
+        width: 280px;
+        box-shadow: 0 4px 8px 0 rgba(0 0 0 0.20), 0 6px 20px 0 rgba(0 0 0 0.19);
+        display: block;
+    }
+
+    .description {
+        margin-left: 2%;
+        margin-top: 2%;
+    }
+
+    .premiere-block {
+        margin-left: 23rem;
+        padding-left: 1rem;
+    }
+
+    .movie-desc-left {
+        width: 9rem;
+        min-width: 9rem;
+    }
+</style>
+<div class="container movie-description-block"
+     style="padding-left: 8%">
+    <div class="d-flex" style="margin-bottom: 2%; margin-top: 2%">
+        <h2 class="text_param">{{film.title}}</h2>
+    </div>
+    <div class="d-flex flex-row">
+        <div class="d-flex">
+            <img src="{{film.poster_url}}" class="movie-vposter"
+                 alt="{{film.title}}">
+        </div>
+        <div class="d-flex description">
+            <div>
+                <div class="d-flex flex-column">
+                    <div>
+                        <button type="button" class="btn btn-outline-success">
+                            Купить билет
+                        </button>
+                    </div>
+                    <div>
+                        <div class="d-flex flex-column">
+                            <div>
+                                <div class="d-flex">
+                                    <div class="movie-desc-left text_param"
+                                         style="text-align: right!important;" align="right">
+                                        Продолжительность:</div>
+                                    <div style="padding-right: 1rem!important;"></div>
+                                    <div class="text_param">
+                                        {{film.duration}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex">
+                                    <div class="movie-desc-left text_param"
+                                         style="text-align: right!important;" align="right">
+                                        Жанр:</div>
+                                    <div style="padding-right: 1rem!important;"></div>
+                                    <div class="text_param">
+                                        {{film.genre|map(attribute='name')|map('capitalize')|join(',
+                                        ')}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="top_offset">
+    <div class="container">
+        <div class="d-flex">
+            <div class="premiere-block" style="margin-top: 2%;">
+                <div class="d-flex flex-column">
+                    <h6 class="text_param">Дата
+                        премьеры - {{film.premiere}}</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
