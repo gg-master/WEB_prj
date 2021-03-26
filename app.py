@@ -50,8 +50,8 @@ def timetable(film_id):
     weekdays = {
         1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
         6: 'Воскресенье', 7: 'Понедельник'}
-    today = {'weekday': weekdays[today.weekday()], 'today': today,
-             'weekdays': weekdays, 'day_delta': timedelta(days=1)}
+    today = {'today': today, 'weekdays': weekdays,
+             'day_delta': timedelta(days=1)}
     db_sess = db_session.create_session()
     film = db_sess.query(Film).filter(Film.id == film_id).first()
     return render_template('timetable.html', today=today, film=film,
