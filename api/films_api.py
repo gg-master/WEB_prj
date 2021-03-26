@@ -29,13 +29,13 @@ def get_films_recommendations():
         {
             'new_films': [
                 film.to_dict(only=(
-                    'title', 'rating', 'actors', 'producer', 'premiere',
+                    'id', 'title', 'rating', 'actors', 'producer', 'premiere',
                     'duration', 'description', 'poster_url', 'images',
                     'trailer_url', 'watchers', 'genre')) for film in
                 new_films],
             'most_watched_films':
                 [film.to_dict(only=(
-                    'title', 'rating', 'actors', 'producer', 'premiere',
+                    'id', 'title', 'rating', 'actors', 'producer', 'premiere',
                     'duration', 'description', 'poster_url', 'images',
                     'trailer_url', 'watchers', 'genre')) for film in
                     most_watched_films]
@@ -46,13 +46,13 @@ def get_films_recommendations():
 @blueprint.route('/api/filter_data', methods=['GET'])
 def get_filter_data():
     db_sess = db_session.create_session()
-    genres = list(set(map(lambda x: x.name, db_sess.query(Genre).all())))
-    years = list(set(map(lambda x: x.premiere.year,
+    genres = sorted(set(map(lambda x: x.name, db_sess.query(Genre).all())))
+    years = sorted(set(map(lambda x: x.premiere.year,
                          db_sess.query(Film).filter(
                              Film.premiere != None).all())))
-    duration = list(set(map(lambda x: x.duration, db_sess.query(Film).filter(
+    duration = sorted(set(map(lambda x: x.duration, db_sess.query(Film).filter(
         Film.duration != None).all())))
-    producer = list(set(map(lambda x: x.producer,
+    producer = sorted(set(map(lambda x: x.producer,
                             db_sess.query(Film).filter(
                                 Film.producer != None).all())))
     return jsonify(
@@ -93,7 +93,7 @@ def get_filtered_films():
     filtered_films = db_sess.query(Film).filter(*req).all()
     pprint.pprint(filtered_films)
     return jsonify({'films': [film.to_dict(
-        only=('title', 'rating', 'actors', 'producer', 'premiere',
+        only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',
               'duration', 'description', 'poster_url', 'images',
               'trailer_url', 'watchers', 'genre')) for film in
         filtered_films]})

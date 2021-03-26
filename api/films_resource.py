@@ -29,9 +29,11 @@ class FilmResource(Resource):
         abort_if_film_not_found(film_id)
         session = db_session.create_session()
         film = session.query(Film).get(film_id)
+        film.watchers += 1
+        session.commit()
         return jsonify({'film': film.to_dict(
             only=(
-                'title', 'rating', 'actors', 'producer', 'premiere',
+                'id', 'title', 'rating', 'actors', 'producer', 'premiere',
                 'duration', 'description', 'poster_url', 'images',
                 'trailer_url', 'watchers', 'genre'))})
 
@@ -49,7 +51,7 @@ class FilmListResource(Resource):
         session = db_session.create_session()
         films = session.query(Film).all()
         return jsonify({'films': [film.to_dict(
-            only=('title', 'rating', 'actors', 'producer', 'premiere',
+            only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',
                   'duration', 'description', 'poster_url', 'images',
                   'trailer_url', 'watchers', 'genre')) for film in films]})
 
