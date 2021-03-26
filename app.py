@@ -1,5 +1,6 @@
 import os
 import pprint
+from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request
 from flask_ngrok import run_with_ngrok
@@ -7,6 +8,7 @@ from flask_restful import Api
 
 from api import films_resource, films_api
 from data import db_session
+from data.films import Film
 
 app = Flask(__name__)
 api = Api(app)
@@ -36,6 +38,24 @@ def start_page():
 def film_description(film_id):
     return render_template('film_description.html',
                            **films_resource.FilmResource().get(film_id).json)
+
+
+@app.route('/timetable/<int:film_id>', methods=['GET'])
+def timetable(film_id):
+    print()
+    btn_day_active = 1
+    if request.args:
+        btn_day_active = int([i for i in request.args][0])
+    today = datetime.now().date()
+    weekdays = {
+        1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
+        6: 'Воскресенье', 7: 'Понедельник'}
+    today = {'weekday': weekdays[today.weekday()], 'today': today,
+             'weekdays': weekdays, 'day_delta': timedelta(days=1)}
+    db_sess = db_session.create_session()
+    film = db_sess.query(Film).filter(Film.id == film_id).first()
+    return render_template('timetable.html', today=today, film=film,
+                           btn_day_active=btn_day_active)
 
 
 def main():

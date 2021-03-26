@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<style type="text/css" rel="stylesheet">
+    .movie-vposter {
+        width: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0 0 0 0.20), 0 6px 20px 0 rgba(0 0 0 0.19);
+        display: block;
+    }
+
+    .text_param {
+        color: white;
+    }
+
+    .pl-3 {
+        padding-left: 1rem !important;
+    }
+
+    .pl-4 {
+        padding-left: 1.5rem !important;
+    }
+
+    .pr-3 {
+        padding-right: 1rem !important;
+    }
+
+    .pt-2 {
+        padding-top: .5rem !important;
+    }
+
+    .film-data {
+        color: #B9B9BB;
+        font-size: 90%;
+    }
+
+    a {
+        -moz-transition: 0.4s;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        color: #fbfbfb;
+    }
+
+    a:hover, a:active, a:focus {
+        color: #009cff;
+        text-decoration: none;
+        outline: none !important;
+    }
+
+    a:active {
+        -moz-box-shadow: 0 0 0 0 transparent;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    .schedule-dates-panel {
+        background-color: #25262B;
+    }
+
+    .schedule-dates-panel div.active {
+        background-color: #B72E80;
+    }
+</style>
+<div class="container-fluid"
+     style="border-bottom: 1px solid; border-bottom-color: #8E8E8E;">
+    <div class="container" style="margin-top: 1.5rem; margin-bottom: 1.5rem">
+        <div class="d-flex flex-row">
+            <div class="d-flex" style="height: 90px;">
+                {% if film.poster_url == None %}
+                <img src="/static/img/none_img.jpg"
+                     class="rounded-circle movie-vposter" alt="{{film.title}}">
+                {% else %}
+                <img src="{{film.poster_url}}"
+                     class='rounded-circle movie-vposter'
+                     alt="{{film.title}}">
+                {% endif %}
+            </div>
+            <div class="d-flex pl-3">
+                <div>
+                    <div class="d-flex flex-column">
+                        <h3 class="text_param">{{film.title}}</h3>
+                    </div>
+                    <div class="d-flex film-data">
+                        <div class="pr-3">
+                            {{film.genre|map('capitalize')|join(', ')}}
+                        </div>
+                        <div class="pr-3">|</div>
+                        <div>{{film.duration}}
+                            минут
+                        </div>
+                    </div>
+                    <div class="d-flex pt-2">
+                        <a href="/films/{{film.id}}">
+                            Подробнее о фильме
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id='date' action="" method="get"></form>
+
+<div class="container" style="padding-top: 1.5rem">
+    <div class="d-flex">
+        <h4 class="text_param pr-3">Расписание</h4>
+        <div class="d-flex flex-column text_param pl-4">
+            <div>
+                <div class="d-flex">
+                    {% set day = namespace(date=today['today'])%}
+                    {% for i in range(6) %}
+                    {% if not loop.first %}
+                        {% set day.date = day.date + today['day_delta'] %}
+                    {% endif %}
+                    {% if btn_day_active == loop.index %}
+                    <button type="submit" form="date"
+                            class="btn btn-primary"
+                            name="{{loop.index}}" value="{{day.date}}">
+                        {% else %}
+                        <button type="submit" form="date"
+                                class="btn btn-dark"
+                                name="{{loop.index}}" value="{{day.date}}">
+                            {% endif %}
+                            {% if loop.first %}
+                                {{today['today']}}
+                            {% else %}{{day.date}}{% endif %}
+                            <br>
+                            {% if loop.first %}
+                                <span>Сегодня</span>
+                            {% else %}
+                                {% set day_c = today['today'].weekday() +
+                                    loop.index0 %}
+                            {% if day_c > 7%}
+                                {% set day_c = -1 * (today['today'].weekday() -
+                                    loop.index0 - 1) %}
+                            {% endif %}
+                                <span>{{today['weekdays'][day_c]}}</span>
+                            {% endif %}
+                        </button>
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
