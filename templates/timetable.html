@@ -137,12 +137,7 @@
                             {% if loop.first %}
                             <span>Сегодня</span>
                             {% else %}
-                            {% set day_c = today['today'].weekday() +
-                            loop.index0 %}
-                            {% if day_c > 7%}
-                            {% set day_c = -1 * (today['today'].weekday() -
-                            loop.index0 - 1) %}
-                            {% endif %}
+                            {% set day_c = day.date.weekday() %}
                             <span>{{today['weekdays'][day_c]}}</span>
                             {% endif %}
                         </button>

@@ -49,7 +49,7 @@ def timetable(film_id):
     today = datetime.now().date()
     weekdays = {
         1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
-        6: 'Воскресенье', 7: 'Понедельник'}
+        6: 'Воскресенье', 0: 'Понедельник'}
     today = {'today': today, 'weekdays': weekdays,
              'day_delta': timedelta(days=1)}
     db_sess = db_session.create_session()
