@@ -1,3 +1,4 @@
+import locale
 import os
 import pprint
 from datetime import datetime, timedelta
@@ -31,37 +32,46 @@ def start_page():
             'index.html', films=films, filter=filter_dct, filtered=True)
     films = films_resource.FilmListResource().get().json['films']
     return render_template('index.html',
-                           films=films, filter=filter_dct, filtered=False,
+                           films=films, filter=filter_dct, title='FilmCenter',
+                           filtered=False,
                            **films_api.get_films_recommendations().json)
 
 
 @app.route('/films/<int:film_id>', methods=['GET'])
 def film_description(film_id):
-    return render_template('film_description.html',
+    return render_template('film_description.html', title='Описание фильма',
                            **films_resource.FilmResource().get(film_id).json)
 
 
 @app.route('/timetable/<int:film_id>', methods=['GET'])
 def timetable(film_id):
+    locale.setlocale(locale.LC_ALL, "ru_Ru")
     btn_day_active = 1
     if request.args:
         btn_day_active = int([i for i in request.args][0])
     today = datetime.now().date()
-    weekdays = {
-        1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
-        6: 'Воскресенье', 0: 'Понедельник'}
-    days_data = {'today': today, 'weekdays': weekdays,
-                 'day_delta': timedelta(days=1)}
+    days_data = {'today': today, 'day_delta': timedelta(days=1)}
     db_sess = db_session.create_session()
     film = db_sess.query(Film).filter(Film.id == film_id).first()
     # Узнаем выбранный день, прибавив к текущей дате номер кнопки
     current_date = today + timedelta(days=btn_day_active - 1)
     film_sess = list(filter(lambda f: f.start_time.date() == current_date,
-                       db_sess.query(FilmSession).filter(
-                           FilmSession.film_id == film.id).all()))
-    return render_template('timetable.html', today=days_data, film=film,
+                            db_sess.query(FilmSession).filter(
+                                FilmSession.film_id == film.id).all()))
+    return render_template('timetable.html', title='Расписание',
+                           today=days_data, film=film,
                            btn_day_active=btn_day_active,
                            film_session=film_sess)
+
+
+@app.route('/order/hallplan/<int:session_id>', methods=["GET"])
+def hallplan(session_id):
+    locale.setlocale(locale.LC_ALL, "ru_Ru")
+    db_sess = db_session.create_session()
+    sess = db_sess.query(FilmSession).filter(
+        FilmSession.id == session_id).first()
+    film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
+    return render_template('hallplan.html', session=sess, film=film)
 
 
 def main():
