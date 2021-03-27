@@ -77,7 +77,7 @@
         user-select: none;
     }
 
-    .seat {
+    #seat {
         width: 30px;
         height: 30px;
         font-size: 15px;
@@ -100,19 +100,18 @@
     /*background-color: #C6127D !important;*/
     /*border-color: #C6127D;*/
     /*}*/
+    .switchable input {
+        display: none;
+    }
 
-    .selected {
+    .switchable input:checked + #seat:not(.status-2):not(.status-3) {
         background-color: #C6127D !important;
         border-color: #C6127D;
     }
 
 </style>
 <form id='hallplan' action="" method="get"></form>
-<script><!--jquery script-->
-$('#parent_class').on('click', '.btn_class', function () {
-    this.addClass("selected");
-});
-</script>
+
 <div class="container-fluid"
      style="border-bottom: 1px solid; border-bottom-color: #8E8E8E;">
     <div class="container" style="margin-top: 1.5rem; margin-bottom: 1.5rem">
@@ -201,28 +200,33 @@ $('#parent_class').on('click', '.btn_class', function () {
                 {% set data.col = 0 %}
                 {% endif %}
                 {% set data.col = data.col + 1%}
-                {% if i == '1' %}
-                <div class="seat d-flex flex-column status-2 place btn_class"
-                     data-place="{{data.row}}-{{data.col}}" tabindex="-1">
-                    {% else %}
-                    <div class="seat d-flex flex-column status-1 place btn_class"
-                         data-place="{{data.row}}-{{data.col}}" tabindex="-1">
-                        {% endif %}
-                        <span class="text_param">{{data.col}}</span>
+                <label class="switchable">
+                    <input type='checkbox' class="" name="{{data.row}}-{{data.col}}"/>
+                    {% if i == '1' %}
+                    <div id="seat"
+                         class="d-flex flex-column status-2 place text_param">
+                        {{data.col}}
                     </div>
-                    {% endfor %}
-                </div>
+                    {% else %}
+                    <div id="seat"
+                         class="d-flex flex-column status-1 place text_param">
+                        {{data.col}}
+                    </div>
+                    {% endif %}
+                </label>
+                {% endfor %}
             </div>
-            <!--Цикл для столбцов-->
-            <div class="d-flex justify-content-start rowmark w-100"
-                 style="top:1px; height:30px;">
-                <div class="p-0 text_param"
-                     style="font-size: 15px; line-height: 30px">1
-                </div>
-                <div class="p-0 ml-auto text_param"
-                     style="font-size: 15px; line-height: 30px">1
-                </div>
+        </div>
+        <!--Цикл для столбцов-->
+        <div class="d-flex justify-content-start rowmark w-100"
+             style="top:1px; height:30px;">
+            <div class="p-0 text_param"
+                 style="font-size: 15px; line-height: 30px">1
+            </div>
+            <div class="p-0 ml-auto text_param"
+                 style="font-size: 15px; line-height: 30px">1
             </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
