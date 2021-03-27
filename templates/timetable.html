@@ -27,6 +27,10 @@
         padding-top: .5rem !important;
     }
 
+    .pr-2 {
+        padding-right: .5rem !important;
+    }
+
     .mr-4 {
         margin-right: 1.5rem !important;
     }
@@ -155,13 +159,29 @@
                     <div class="d-flex"
                          style="font-size: 1.2rem;
                          padding-bottom: .25rem!important;">
-                        Киномакс-Водный Москва
+                        Киномакс Волгоград
                     </div>
-                    <div class="pt-2">
-                        <i class="fa fa-map-marker"></i>
+                    <div class="d-flex text_param">
+                        <div class="pr-2 pt-2">
+                            <object data="/static/img/map-pin-r.svg"
+                                    width="20"
+                                    height="20"></object>
+                        </div>
+                        <div style="font-size: .8rem;">
+                            Рабоче-Крестьянская улица, 10, Волгоград,
+                            Волгоградская
+                            обл., 400001
+                        </div>
                     </div>
-                    <div style="font-size: .8rem;">
-                        ул. Головинское шоссе, д. 5, ТЦ «Водный», 3 этаж
+                    <div class="d-flex text_param">
+                        <div class="pr-2 pt-2">
+                            <object data="/static/img/phone-r.svg"
+                                    width="20"
+                                    height="20"></object>
+                        </div>
+                        <div style="font-size: .8rem; padding-top: 0.4rem">
+                            +7 (8442) 93-52-52
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,16 +190,26 @@
                     <div class="d-flex w-100">
                         <div class="d-flex flex-wrap">
                             <!--Цикл для времени-->
+                            {% if film_session %}
+                            {% for session in film_session %}
                             <div class="session d-flex pr-2 flex-column pb-3">
                                 <div>
-                                    <a href="#">12:35</a>
+                                    <a href="#">
+                                        {{session.start_time.time().hour}}:{{session.start_time.time().minute}}
+                                    </a>
                                 </div>
                                 <div class="pt-2 text_param"
                                      style="font-size: .7rem;
                                      text-align: center!important;">
-                                    От 200
+                                    От {{session.price}}
                                 </div>
                             </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="d-flex pr-2 text_param">
+                                Сеансов на выбранную дату не найдено
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
