@@ -57,6 +57,7 @@ nosetests.xml
 coverage.xml
 *.xml
 *.iml
+*.meta
 *.cover
 *.py,cover
 .hypothesis/
