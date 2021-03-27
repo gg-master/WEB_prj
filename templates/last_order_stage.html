@@ -1,0 +1,171 @@
+{% extends "base_order.html" %}
+{% block content %}
+<style>
+    .movie-vposter {
+        width: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0 0 0 0.20), 0 6px 20px 0 rgba(0 0 0 0.19);
+        display: block;
+    }
+
+    .text_param {
+        color: white;
+    }
+
+    .film-data {
+        color: #B9B9BB;
+        font-size: 90%;
+    }
+
+    a {
+        -moz-transition: 0.4s;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        color: #fbfbfb;
+    }
+
+    a:hover, a:active, a:focus {
+        color: #009cff;
+        text-decoration: none;
+        outline: none !important;
+    }
+
+    a:active {
+        -moz-box-shadow: 0 0 0 0 transparent;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    .session a {
+        padding: .4rem 1rem;
+        border: #797A7C 1px solid;
+        border-radius: .25rem;
+    }
+
+    .hallplan-wrapper {
+        position: relative;
+    }
+
+    .hallplan-wrapper .plan-canvas {
+        position: absolute;
+        z-index: 2;
+    }
+
+    .hallplan-wrapper .rowmark {
+        /*position: absolute;*/
+        z-index: 1;
+        margin-bottom: 1.2rem;
+    }
+
+    .hallplan-wrapper .plan-canvas .place {
+        /*position: absolute;*/
+        color: #CBCBCC;
+        font-size: .7rem;
+        text-align: center;
+    }
+
+    .status-1 {
+        border: 1px solid white;
+    }
+
+    .status-2 {
+        background-color: #28ACE2 !important;
+        border: none !important;
+    }
+
+    .place {
+        border-bottom-left-radius: 30%;
+        border-bottom-right-radius: 30%;
+        user-select: none;
+    }
+
+    #seat {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+        line-height: 30px;
+        margin-right: 0.7rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .hallplan-wrapper .plan-canvas .place:not(.status-2):not(.status-3) {
+        cursor: pointer;
+        transition: all 250ms ease-in-out;
+    }
+
+    .hallplan-wrapper .plan-canvas .place:not(.status-2):not(.status-3):hover {
+        border-color: deepskyblue;
+    }
+
+    .switchable input {
+        display: none;
+    }
+
+    .switchable input:checked + #seat:not(.status-2):not(.status-3) {
+        background-color: #C6127D !important;
+        border-color: #C6127D;
+    }
+
+    .footer {
+        border-top: #979797 solid 1px;
+        padding: .2rem 1rem;
+    }
+
+    html {
+        overflow: hidden;
+    }
+
+    #plan-container {
+        position: relative;
+    }
+</style>
+<form id='hallplan' action="" method="POST"></form>
+<div class="container-fluid h-100 block-blurred p-0"
+     style="background-image: none; background-color: rgb(32, 34, 38);
+     height: 100%; min-height: 100vh;">
+    <div class="container-fluid"
+         style="border-bottom: 1px solid; border-bottom-color: #8E8E8E;">
+        <div class="container"
+             style="padding-top: 1.5rem; margin-bottom: 1.5rem">
+            <div class="d-flex flex-row">
+                <div class="d-flex" style="height: 90px;">
+                    {% if film.poster_url == None %}
+                    <img src="/static/img/none_img.jpg"
+                         class="rounded movie-vposter" alt="{{film.title}}">
+                    {% else %}
+                    <img src="{{film.poster_url}}"
+                         class='rounded movie-vposter'
+                         alt="{{film.title}}">
+                    {% endif %}
+                </div>
+                <div class="d-flex pl-3">
+                    <div>
+                        <div class="d-flex flex-column">
+                            <h3 class="text_param">{{film.title}}</h3>
+                        </div>
+                        <div class="d-flex text_param">
+                            <div class="pr-3">
+                                Киномакс Волгоград
+                            </div>
+                            <div class="pr-3">|</div>
+                            <div class="pr-3">
+                                {{session.start_time.strftime('%d %A в
+                                %H:%M')}}
+                            </div>
+                            <div class="pr-3">|</div>
+                            <div>Зал {{session.hall_id}}</div>
+                        </div>
+                        <div class="d-flex pt-2 film-data">
+                            Рабоче-Крестьянская улица, 10, Волгоград,
+                            Волгоградская
+                            обл., 400001
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        asd
+    </div>
+</div>
+{% endblock %}

@@ -64,14 +64,23 @@ def timetable(film_id):
                            film_session=film_sess)
 
 
-@app.route('/order/hallplan/<int:session_id>', methods=["GET"])
+@app.route('/order/hallplan/<int:session_id>', methods=["GET", 'POST'])
 def hallplan(session_id):
     locale.setlocale(locale.LC_ALL, "ru_Ru")
     db_sess = db_session.create_session()
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
-    return render_template('hallplan.html', session=sess, film=film)
+    if request.method == 'POST':
+        print([i for i in request.form])
+        print([i for i in request.args])
+        return render_template('last_order_stage.html',
+                               navbar_title='Подтверждение покупки',
+                               session=sess, film=film,
+                               prev_win=f'/order/hallplan/{sess.id}')
+    return render_template('hallplan.html', session=sess, film=film,
+                           navbar_title='Выбор мест',
+                           prev_win=f'/timetable/{film.id}')
 
 
 def main():
