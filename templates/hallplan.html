@@ -245,6 +245,7 @@
                     {% endfor %}
                 </div>
                 <!--Цикл для столбцов-->
+                {% set count = session.places|length / 20 %}
                 {% for i in range(3)%}
                 <div class="d-flex justify-content-start rowmark w-100"
                      style="height:30px;">
