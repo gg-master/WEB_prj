@@ -166,7 +166,7 @@
                             <div class="session d-flex pr-2 flex-column pb-3">
                                 <div>
                                     <a href="/order/hallplan/{{session.id}}">
-                                        {{session.start_time.time().hour}}:{{session.start_time.time().minute}}
+                                        {{session.start_time.strftime('%H:%M')}}
                                     </a>
                                 </div>
                                 <div class="pt-2 text_param"

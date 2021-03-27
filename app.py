@@ -71,7 +71,7 @@ def hallplan(session_id):
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form:
         print([i for i in request.form])
         print([i for i in request.args])
         return render_template('last_order_stage.html',
@@ -80,7 +80,8 @@ def hallplan(session_id):
                                prev_win=f'/order/hallplan/{sess.id}')
     return render_template('hallplan.html', session=sess, film=film,
                            navbar_title='Выбор мест',
-                           prev_win=f'/timetable/{film.id}')
+                           prev_win=f'/timetable/{film.id}',
+                           modal_alert=(request.method == 'POST'))
 
 
 def main():
