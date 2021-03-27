@@ -44,6 +44,7 @@ class FilmResource(Resource):
         return jsonify({'success': 'OK'})
 
     def put(self, film_id):
+        abort_if_film_not_found(film_id)
         args = parser.parse_args()
         session = db_session.create_session()
         film = session.query(Film).get(film_id)

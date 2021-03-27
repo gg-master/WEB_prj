@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 # from flask_ngrok import run_with_ngrok
 from flask_restful import Api
 
-from api import films_resource, films_api
+from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
 
@@ -40,6 +40,8 @@ def main():
     api.add_resource(films_resource.FilmResource,
                      '/api/films/<int:film_id>')
     api.add_resource(films_resource.FilmListResource, '/api/films')
+    api.add_resource(film_session_resource.FilmSessionResource, '/api/film_sessions/<int:film_sess_id>')
+    api.add_resource(film_session_resource.FilmSessionListResource, '/api/film_sessions')
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
     app.run()
