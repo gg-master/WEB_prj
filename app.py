@@ -4,8 +4,8 @@ import pprint
 import pymorphy2
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, request
-# from flask_ngrok import run_with_ngrok
+from flask import Flask, render_template, request, session
+from flask_ngrok import run_with_ngrok
 from flask_restful import Api
 
 from api import films_resource, films_api, film_session_resource
@@ -15,7 +15,7 @@ from data.films import Film
 
 app = Flask(__name__)
 api = Api(app)
-# run_with_ngrok(app)
+run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
@@ -40,6 +40,7 @@ def start_page():
 
 @app.route('/films/<int:film_id>', methods=['GET'])
 def film_description(film_id):
+    # Отрисовываем экран с описанием фильма
     return render_template('film_description.html', title='Описание фильма',
                            **films_resource.FilmResource().get(film_id).json)
 
@@ -72,27 +73,38 @@ def timetable(film_id):
 def hallplan(session_id):
     locale.setlocale(locale.LC_ALL, "ru_Ru")
     db_sess = db_session.create_session()
+    # Получение объекта сеанса и фильма для более удобной работы с объектами
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
+    # Установка некоторых кукки
+    session['price_session'] = sess.price
+    # Создание словаря с параметрами для шаблона
     params = {
         'session': sess, 'film': film}
     if request.method == 'POST' and request.form:
+        # Узнаем какие номера билетов имеются
         arr = [i for i in request.form
                if request.form.get(i) in ('label', 'on')]
+        # Удаляем билеты, на которые пользователь нажал кнопкой мыши
         deleted_item = [i for i in request.form if request.form.get(i) == i]
         arr = list(filter(lambda x: x not in deleted_item, arr))
+        # Если билетов больше нет, то открываем экран с выбором мест
         if not arr:
             return render_template('hallplan.html', navbar_title='Выбор мест',
                                    prev_win=f'/timetable/{film.id}',
                                    modal_alert=False, params=params)
+        # Склоняем слово "билет"
         morph = pymorphy2.MorphAnalyzer()
         params['ticket_w'] = morph.parse('билет')[
                 0].make_agree_with_number(len(arr)).word
+        # Отрисовываем экран с отображением
+        # всех билетов и их итоговой стоимости
         return render_template('last_order_stage.html',
                                navbar_title='Подтверждение покупки',
                                prev_win=f'/order/hallplan/{sess.id}',
                                selected_places=arr, params=params)
+    # Отрисовка экрана с выбором места в зале
     return render_template('hallplan.html', navbar_title='Выбор мест',
                            prev_win=f'/timetable/{film.id}', params=params,
                            modal_alert=(request.method == 'POST'))
@@ -100,6 +112,7 @@ def hallplan(session_id):
 
 def make_order():
     print(request.values)
+    print(session.get('price_session'))
     pass
 
 
