@@ -20,8 +20,8 @@ parser.add_argument('description', default='')
 parser.add_argument('poster_url', default=None)
 parser.add_argument('trailer_url', default=None)
 parser.add_argument('watchers', type=int, default=0)
-parser.add_argument('images', action='append', type=list, default=[])
-parser.add_argument('genres', action='append', type=list, default=[])
+parser.add_argument('images', action='append', default=[])
+parser.add_argument('genres', action='append', default=[])
 
 
 class FilmResource(Resource):
@@ -59,9 +59,11 @@ class FilmResource(Resource):
         film.poster_url = args['poster_url']
         film.trailer_url = args['trailer_url']
         film.watchers = args['watchers']
+        # print(args['genres'], type(args['genres']))
         if args['premiere']:
             film.premiere = datetime.fromisoformat(args['premiere'])
-        genres = list(map(lambda x: x.lower(), args['genres']))
+        # genres = list(map(lambda x: x.lower(), args['genres']))
+        genres = args['genres']
         for genre_name in genres:
             genre = session.query(Genre).filter(
                 Genre.name == genre_name).first()
@@ -104,6 +106,7 @@ class FilmListResource(Resource):
             trailer_url=args['trailer_url'],
             watchers=args['watchers']
         )
+        print(args['genres'])
         if args['premiere']:
             film.premiere = datetime.fromisoformat(args['premiere'])
         genres = list(map(lambda x: x.lower(), args['genres']))

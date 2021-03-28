@@ -1,11 +1,11 @@
 import os
 import pprint
 from datetime import datetime, timedelta
-
-from flask import Flask, render_template, request
+from requests import get, put, post, delete
+from flask import Flask, render_template, request, redirect
 # from flask_ngrok import run_with_ngrok
 from flask_restful import Api
-
+from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
@@ -16,7 +16,25 @@ api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
-# app.config['DEBUG'] = True
+app.config['DEBUG'] = True
+@app.route('/add_film', methods=['GET', 'POST'])
+def add_film():
+    form = FilmForm()
+    if form.validate_on_submit():
+        data = {'title': form.title.data, 'rating': form.rating.data,
+                'actors': form.actors.data, 'producer': form.producer.data,
+                'premiere': form.premiere.data.strftime('%Y-%m-%d'),
+                'duration': form.duration.data,
+                'description': form.description.data,
+                'poster_url': form.poster_url.data,
+                'trailer_url': form.trailer_url.data, 'watchers': 0,
+                'images': form.images.data.split(', '),
+                'genres': form.genres.data.split(', ')}
+        print(form.genres.data.split(', '))
+        post('http://localhost:5000/api/films', json=data)
+        return redirect("/")
+    return render_template("film_form.html", title="Добавление фильма",
+                           form=form)
 
 
 @app.route('/', methods=['GET', "POST"])
