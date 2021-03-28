@@ -12,7 +12,6 @@ from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.film_sessions import FilmSession
 from data.films import Film
-from forms.order_form import OrderForm
 
 app = Flask(__name__)
 api = Api(app)
