@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <title>{{ title }}</title>
+</head>
+<style>
+    a {
+        -moz-transition: 0.4s;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        color: #e1e1e1;
+    }
+
+    a:hover, a:active, a:focus {
+        color: #009cff;
+        text-decoration: none;
+        outline: none !important;
+    }
+
+    a:active {
+        -moz-box-shadow: 0 0 0 0 transparent;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
+    }
+</style>
+<header>
+    <nav class="navbar-dark bg-dark">
+        <div class="container-fluid" style="
+        border-bottom: #979797 solid 1px; line-height: 3.5rem;">
+            <div class="container d-flex justify-content-between">
+                <div class="navbar-brand">
+                    <a href="{{prev_win}}">
+                        <i class="fa fa-chevron-left fa-lg"></i>
+                    </a>
+                </div>
+                <div>
+                    <a class="navbar-brand text-white" href="/">
+                        <h3>
+                            Film<img src="/static/img/log-invert.png"
+                                     width="30"
+                                     height="30"
+                                     class="d-inline-block align-top"
+                                     alt=""
+                                     style="margin: 0; padding: 0">enter
+                        </h3>
+
+                    </a>
+                    <h3 class="navbar-brand text-white">{{navbar_title}}</h3>
+                </div>
+                <div class="navbar-brand">
+                    <a href="/timetable/{{params['film'].id}}">
+                        <i class="fa fa-times fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<body style="height: 100%; min-height: 100vh;">
+<!-- Begin page content -->
+<main role="main">
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

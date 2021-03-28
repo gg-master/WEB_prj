@@ -1,0 +1,222 @@
+{% extends "base_order.html" %}
+{% block content %}
+<style>
+    .movie-vposter {
+        width: 90px;
+        box-shadow: 0 4px 8px 0 rgba(0 0 0 0.20), 0 6px 20px 0 rgba(0 0 0 0.19);
+        display: block;
+    }
+
+    .text_param {
+        color: white;
+    }
+
+    .film-data {
+        color: #B9B9BB;
+        font-size: 90%;
+    }
+
+    a {
+        -moz-transition: 0.4s;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        color: #fbfbfb;
+    }
+
+    a:hover, a:active, a:focus {
+        color: #009cff;
+        text-decoration: none;
+        outline: none !important;
+    }
+
+    a:active {
+        -moz-box-shadow: 0 0 0 0 transparent;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    .session a {
+        padding: .4rem 1rem;
+        border: #797A7C 1px solid;
+        border-radius: .25rem;
+    }
+
+    .container-placeslist .order-place {
+        width: 30%;
+        background-color: #323439;
+        padding: .8rem;
+        margin: .4rem;
+        border-radius: .2rem;
+    }
+
+    .container-placeslist .order-place div:first-child {
+        padding-right: .8rem;
+    }
+
+    .fs-17 {
+        font-size: 1.7rem;
+    }
+
+    .alert-card {
+        background-color: #FFFFFF;
+        color: #E53836;
+    }
+</style>
+<form id='hallplan' action="" method="POST"></form>
+<div class="container-fluid h-100 block-blurred p-0"
+     style="background-image: none; background-color: rgb(32, 34, 38);
+     height: 100%; min-height: 100vh;">
+    <div class="container-fluid"
+         style="border-bottom: 1px solid; border-bottom-color: #8E8E8E;">
+        <div class="container"
+             style="padding-top: 1.5rem; margin-bottom: 1.5rem">
+            <div class="d-flex flex-row">
+                <div class="d-flex" style="height: 90px;">
+                    {% if params['film'].poster_url == None %}
+                    <img src="/static/img/none_img.jpg"
+                         class="rounded movie-vposter"
+                         alt="{{params['film'].title}}">
+                    {% else %}
+                    <img src="{{params['film'].poster_url}}"
+                         class='rounded movie-vposter'
+                         alt="{{params['film'].title}}">
+                    {% endif %}
+                </div>
+                <div class="d-flex pl-3">
+                    <div>
+                        <div class="d-flex flex-column">
+                            <h3 class="text_param">
+                                {{params['film'].title}}</h3>
+                        </div>
+                        <div class="d-flex text_param">
+                            <div class="pr-3">
+                                Киномакс Волгоград
+                            </div>
+                            <div class="pr-3">|</div>
+                            <div class="pr-3">
+                                {{params['session'].start_time.strftime('%d %A
+                                в
+                                %H:%M')}}
+                            </div>
+                            <div class="pr-3">|</div>
+                            <div>Зал {{params['session'].hall_id}}</div>
+                        </div>
+                        <div class="d-flex pt-2 film-data">
+                            Рабоче-Крестьянская улица, 10, Волгоград,
+                            Волгоградская
+                            обл., 400001
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id='order' action="/timetable/{{params['film'].id}}"
+          method="POST"></form>
+    <div class="container-fluid">
+        <div class="container pt-4" style="display: block;">
+            <div class="d-flex flex-column w-100">
+                <form class="ordering-form" action="" method="post">
+                    <div class="d-flex flex-wrap container-placeslist w-100">
+                        <!--Цикл для билетов-->
+                        {% for place in selected_places %}
+                        <div class="d-flex order-place fs-09 text_param">
+                            <div>
+                                <button class="btn btn-outline-light"
+                                        type="submit" name={{place}}
+                                        value="{{place}}">x
+                                </button>
+                                <label style="width: 0; height: 0;">
+                                    <input name="{{place}}" value="label"
+                                           style="display: none">
+                                    <input name="{{place}}" value="label"
+                                           style="display: none" form="order">
+                                </label>
+                            </div>
+                            <div>{{place.split('-')[0]}} ряд,
+                                {{place.split('-')[1]}} место
+                            </div>
+                            <div class="ml-auto">{{params['session'].price}} ₽
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </form>
+                <div class="order-total pl-2 pt-4 pb-3">
+                    <div class="d-flex">
+                        <div class="fs-17 text_param">
+                            {{selected_places|length}}
+                            {{params['ticket_w']}} за
+                            <span>{{params['session'].price * selected_places|length }} ₽</span>
+                        </div>
+                    </div>
+                </div>
+                {% if params['error'] %}
+                <div id="container-error" class="pl-2"
+                     style="display: block;">
+                    <div class="d-flex alert alert-card">
+                        <div>
+                            <i class="fa fa-exclamation-triangle"></i>
+                            &nbsp;
+                        </div>
+                        <div role="alert" id="ordering-error">
+                            {{params['error']}}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div id="container-buyform" style="display: block;">
+                    <div class="d-flex pl-2">
+                        <div class="pr-3">
+                            <div class="form-check agree-check text_param">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="iagree"
+                                           value="1"
+                                           class="form-check-input"
+                                           id="iagree" required="required">
+                                    Подтверждаю бронирование билетов на
+                                    сеанс
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex p-2 w-100"
+                         style="margin-top: 10%">
+                        <div class="w-30">
+                            <div class="form-group w-100 text_param">
+                                <label for="email">
+                                    Укажите e-mail, куда прислать
+                                    билеты
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text bg-white">
+                                            @
+                                        </div>
+                                    </div>
+                                    <input class="form-control km-control"
+                                           placeholder="E-mail"
+                                           required="required"
+                                           id="email"
+                                           type="email" name="email"
+                                           form="order">
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" d-flex flex-column pl-4 pt-4">
+                            <div class="pt-2"></div>
+                            <div>
+                                <button class="btn btn
+                                    btn-outline-light text_param" form="order">
+                                    Подтвердить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

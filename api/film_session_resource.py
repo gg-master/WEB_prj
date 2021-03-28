@@ -54,8 +54,7 @@ class FilmSessionListResource(Resource):
         film_sesses = session.query(FilmSession).all()
         return jsonify({'films': [film_sess.to_dict(
             only=('film_id', 'hall_id', 'start_time', 'end_time', 'places',
-                  'price')) for film_sess
-            in film_sesses]})
+                  'price')) for film_sess in film_sesses]})
 
     def post(self):
         args = parser.parse_args()
@@ -68,7 +67,6 @@ class FilmSessionListResource(Resource):
                                 places=args['places'],
                                 price=args['price']
         )
-        print(film_sess)
         session.add(film_sess)
         session.commit()
-        return jsonify({'success': 'bds'})
+        return jsonify({'success': 'OK'})

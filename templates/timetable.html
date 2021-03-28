@@ -11,30 +11,6 @@
         color: white;
     }
 
-    .pl-3 {
-        padding-left: 1rem !important;
-    }
-
-    .pl-4 {
-        padding-left: 1.5rem !important;
-    }
-
-    .pr-3 {
-        padding-right: 1rem !important;
-    }
-
-    .pt-2 {
-        padding-top: .5rem !important;
-    }
-
-    .mr-4 {
-        margin-right: 1.5rem !important;
-    }
-
-    .pb-3 {
-        padding-bottom: 1rem !important;
-    }
-
     .film-data {
         color: #B9B9BB;
         font-size: 90%;
@@ -138,7 +114,7 @@
                             <span>Сегодня</span>
                             {% else %}
                             {% set day_c = day.date.weekday() %}
-                            <span>{{today['weekdays'][day_c]}}</span>
+                            <span>{{day.date.strftime("%A")}}</span>
                             {% endif %}
                         </button>
                         {% endfor %}
@@ -155,13 +131,29 @@
                     <div class="d-flex"
                          style="font-size: 1.2rem;
                          padding-bottom: .25rem!important;">
-                        Киномакс-Водный Москва
+                        Киномакс Волгоград
                     </div>
-                    <div class="pt-2">
-                        <i class="fa fa-map-marker"></i>
+                    <div class="d-flex text_param">
+                        <div class="pr-2 pt-2">
+                            <object data="/static/img/map-pin-r.svg"
+                                    width="20"
+                                    height="20"></object>
+                        </div>
+                        <div style="font-size: .8rem;">
+                            Рабоче-Крестьянская улица, 10, Волгоград,
+                            Волгоградская
+                            обл., 400001
+                        </div>
                     </div>
-                    <div style="font-size: .8rem;">
-                        ул. Головинское шоссе, д. 5, ТЦ «Водный», 3 этаж
+                    <div class="d-flex text_param">
+                        <div class="pr-2 pt-2">
+                            <object data="/static/img/phone-r.svg"
+                                    width="20"
+                                    height="20"></object>
+                        </div>
+                        <div style="font-size: .8rem; padding-top: 0.4rem">
+                            +7 (8442) 93-52-52
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,16 +162,26 @@
                     <div class="d-flex w-100">
                         <div class="d-flex flex-wrap">
                             <!--Цикл для времени-->
+                            {% if film_session %}
+                            {% for session in film_session %}
                             <div class="session d-flex pr-2 flex-column pb-3">
                                 <div>
-                                    <a href="#">12:35</a>
+                                    <a href="/order/hallplan/{{session.id}}">
+                                        {{session.start_time.strftime('%H:%M')}}
+                                    </a>
                                 </div>
                                 <div class="pt-2 text_param"
                                      style="font-size: .7rem;
                                      text-align: center!important;">
-                                    От 200
+                                    От {{session.price}}
                                 </div>
                             </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="d-flex pr-2 text_param">
+                                Сеансов на выбранную дату не найдено
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -187,4 +189,29 @@
         </div>
     </div>
 </div>
+{% if special_mess %}
+<script>
+    $(document).ready(function () {
+        $('.toast').toast('show');
+    }); </script>z
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<div class="float-right" aria-live="polite" aria-atomic="true">
+    <div class="toast" style="position: absolute; top: 0; right: 0;
+  margin-right: 2rem; margin-top: 5rem; min-height: 120px"
+         data-autohide="true" data-delay="10000">
+        <div class="toast-header">
+            <strong class="mr-auto">FilmCenter</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                    aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Заказанные билеты были <br>отправлены Вам на указанную почту.
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
