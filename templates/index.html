@@ -311,10 +311,10 @@
                 <a href="/films/{{film.id}}">
                     {% if film.poster_url == None %}
                     <img src="/static/img/none_img.jpg"
-                         class="card-img-top" alt="">
+                         class="card-img-top" alt="" style="height: 70%">
                     {% else %}
                     <img src="{{ film.poster_url }}"
-                         class="card-img-top" alt="">
+                         class="card-img-top" alt="" style="height: 70%">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{film.title }}</h5>

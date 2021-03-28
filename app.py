@@ -15,7 +15,7 @@ from data.films import Film
 
 app = Flask(__name__)
 api = Api(app)
-run_with_ngrok(app)
+# run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
@@ -80,8 +80,7 @@ def hallplan(session_id):
     # Установка некоторых кукки
     session['price_session'] = sess.price
     # Создание словаря с параметрами для шаблона
-    params = {
-        'session': sess, 'film': film}
+    params = {'session': sess, 'film': film}
     if request.method == 'POST' and request.form:
         # Узнаем какие номера билетов имеются
         arr = [i for i in request.form
