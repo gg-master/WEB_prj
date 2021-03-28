@@ -1,6 +1,7 @@
 import locale
 import os
 import pprint
+import pymorphy2
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request
@@ -71,16 +72,26 @@ def hallplan(session_id):
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
+    params = {
+        'session': sess, 'film': film}
     if request.method == 'POST' and request.form:
-        print([i for i in request.form])
-        print([i for i in request.args])
+        arr = [i for i in request.form
+               if request.form.get(i) in ('label', 'on')]
+        deleted_item = [i for i in request.form if request.form.get(i) == i]
+        arr = list(filter(lambda x: x not in deleted_item, arr))
+        if not arr:
+            return render_template('hallplan.html', navbar_title='Выбор мест',
+                                   prev_win=f'/timetable/{film.id}',
+                                   modal_alert=False, params=params)
+        morph = pymorphy2.MorphAnalyzer()
+        params['ticket_w'] = morph.parse('билет')[
+                0].make_agree_with_number(len(arr)).word
         return render_template('last_order_stage.html',
                                navbar_title='Подтверждение покупки',
-                               session=sess, film=film,
-                               prev_win=f'/order/hallplan/{sess.id}')
-    return render_template('hallplan.html', session=sess, film=film,
-                           navbar_title='Выбор мест',
-                           prev_win=f'/timetable/{film.id}',
+                               prev_win=f'/order/hallplan/{sess.id}',
+                               selected_places=arr, params=params)
+    return render_template('hallplan.html', navbar_title='Выбор мест',
+                           prev_win=f'/timetable/{film.id}', params=params,
                            modal_alert=(request.method == 'POST'))
 
 

@@ -41,81 +41,20 @@
         border-radius: .25rem;
     }
 
-    .hallplan-wrapper {
-        position: relative;
+    .container-placeslist .order-place {
+        width: 30%;
+        background-color: #323439;
+        padding: .8rem;
+        margin: .4rem;
+        border-radius: .2rem;
     }
 
-    .hallplan-wrapper .plan-canvas {
-        position: absolute;
-        z-index: 2;
+    .container-placeslist .order-place div:first-child {
+        padding-right: .8rem;
     }
 
-    .hallplan-wrapper .rowmark {
-        /*position: absolute;*/
-        z-index: 1;
-        margin-bottom: 1.2rem;
-    }
-
-    .hallplan-wrapper .plan-canvas .place {
-        /*position: absolute;*/
-        color: #CBCBCC;
-        font-size: .7rem;
-        text-align: center;
-    }
-
-    .status-1 {
-        border: 1px solid white;
-    }
-
-    .status-2 {
-        background-color: #28ACE2 !important;
-        border: none !important;
-    }
-
-    .place {
-        border-bottom-left-radius: 30%;
-        border-bottom-right-radius: 30%;
-        user-select: none;
-    }
-
-    #seat {
-        width: 30px;
-        height: 30px;
-        font-size: 15px;
-        line-height: 30px;
-        margin-right: 0.7rem;
-        margin-bottom: 0.7rem;
-    }
-
-    .hallplan-wrapper .plan-canvas .place:not(.status-2):not(.status-3) {
-        cursor: pointer;
-        transition: all 250ms ease-in-out;
-    }
-
-    .hallplan-wrapper .plan-canvas .place:not(.status-2):not(.status-3):hover {
-        border-color: deepskyblue;
-    }
-
-    .switchable input {
-        display: none;
-    }
-
-    .switchable input:checked + #seat:not(.status-2):not(.status-3) {
-        background-color: #C6127D !important;
-        border-color: #C6127D;
-    }
-
-    .footer {
-        border-top: #979797 solid 1px;
-        padding: .2rem 1rem;
-    }
-
-    html {
-        overflow: hidden;
-    }
-
-    #plan-container {
-        position: relative;
+    .fs-17 {
+        font-size: 1.7rem;
     }
 </style>
 <form id='hallplan' action="" method="POST"></form>
@@ -128,19 +67,19 @@
              style="padding-top: 1.5rem; margin-bottom: 1.5rem">
             <div class="d-flex flex-row">
                 <div class="d-flex" style="height: 90px;">
-                    {% if film.poster_url == None %}
+                    {% if params['film'].poster_url == None %}
                     <img src="/static/img/none_img.jpg"
-                         class="rounded movie-vposter" alt="{{film.title}}">
+                         class="rounded movie-vposter" alt="{{params['film'].title}}">
                     {% else %}
-                    <img src="{{film.poster_url}}"
+                    <img src="{{params['film'].poster_url}}"
                          class='rounded movie-vposter'
-                         alt="{{film.title}}">
+                         alt="{{params['film'].title}}">
                     {% endif %}
                 </div>
                 <div class="d-flex pl-3">
                     <div>
                         <div class="d-flex flex-column">
-                            <h3 class="text_param">{{film.title}}</h3>
+                            <h3 class="text_param">{{params['film'].title}}</h3>
                         </div>
                         <div class="d-flex text_param">
                             <div class="pr-3">
@@ -148,11 +87,11 @@
                             </div>
                             <div class="pr-3">|</div>
                             <div class="pr-3">
-                                {{session.start_time.strftime('%d %A в
+                                {{params['session'].start_time.strftime('%d %A в
                                 %H:%M')}}
                             </div>
                             <div class="pr-3">|</div>
-                            <div>Зал {{session.hall_id}}</div>
+                            <div>Зал {{params['session'].hall_id}}</div>
                         </div>
                         <div class="d-flex pt-2 film-data">
                             Рабоче-Крестьянская улица, 10, Волгоград,
@@ -164,8 +103,42 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        asd
+    <div class="container-fluid">
+        <form class="ordering-form" action="" method="post">
+            <div class="container pt-4" style="display: block;">
+                <div class="d-flex flex-column w-100">
+                    <div class="d-flex flex-wrap container-placeslist w-100">
+                        <!--Цикл для билетов-->
+                        {% for place in selected_places %}
+                        <div class="d-flex order-place fs-09 text_param">
+                            <div>
+                                <button class="btn btn-outline-light"
+                                        type="submit" name={{place}}
+                                        value="{{place}}">x
+                                </button>
+                                <label style="width: 0; height: 0">
+                                    <input name="{{place}}" value="label"
+                                           style="visibility: hidden">
+                                </label>
+                            </div>
+                            <div>{{place.split('-')[0]}} ряд,
+                                {{place.split('-')[1]}} место
+                            </div>
+                            <div class="ml-auto">{{params['session'].price}} ₽</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="order-total pl-2 pt-4 pb-3">
+                        <div class="d-flex">
+                            <div class="fs-17 text_param">
+                                {{selected_places|length}} {{params['ticket_w']}} за
+                                <span>{{params['session'].price * selected_places|length }} ₽</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

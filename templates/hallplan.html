@@ -139,19 +139,19 @@
              style="margin-top: 1.5rem; margin-bottom: 1.5rem">
             <div class="d-flex flex-row">
                 <div class="d-flex" style="height: 90px;">
-                    {% if film.poster_url == None %}
+                    {% if params['film'].poster_url == None %}
                     <img src="/static/img/none_img.jpg"
-                         class="rounded movie-vposter" alt="{{film.title}}">
+                         class="rounded movie-vposter" alt="{{params['film'].title}}">
                     {% else %}
-                    <img src="{{film.poster_url}}"
+                    <img src="{{params['film'].poster_url}}"
                          class='rounded movie-vposter'
-                         alt="{{film.title}}">
+                         alt="{{params['film'].title}}">
                     {% endif %}
                 </div>
                 <div class="d-flex pl-3">
                     <div>
                         <div class="d-flex flex-column">
-                            <h3 class="text_param">{{film.title}}</h3>
+                            <h3 class="text_param">{{params['film'].title}}</h3>
                         </div>
                         <div class="d-flex text_param">
                             <div class="pr-3">
@@ -159,11 +159,11 @@
                             </div>
                             <div class="pr-3">|</div>
                             <div class="pr-3">
-                                {{session.start_time.strftime('%d %A в
+                                {{params['session'].start_time.strftime('%d %A в
                                 %H:%M')}}
                             </div>
                             <div class="pr-3">|</div>
-                            <div>Зал {{session.hall_id}}</div>
+                            <div>Зал {{params['session'].hall_id}}</div>
                         </div>
                         <div class="d-flex pt-2 film-data">
                             Рабоче-Крестьянская улица, 10, Волгоград,
@@ -216,8 +216,8 @@
                      class="plan-canvas d-flex flex-wrap"
                      style="width: 950px; left:75px; padding-left: 3rem; padding-right: 3rem">
                     <!--Клетки кресел-->
-                    {% set data = namespace(row=0, col=0)%}
-                    {% for i in session.places %}
+                    {% set data = namespace(row=1, col=0)%}
+                    {% for i in params['session'].places %}
                     {% if data.col >= 20 %}
                     {% set data.row = data.row + 1 %}
                     {% set data.col = 0 %}
@@ -245,7 +245,7 @@
                     {% endfor %}
                 </div>
                 <!--Цикл для столбцов-->
-                {% set count = session.places|length / 20 %}
+                {% set count = params['session'].places|length / 20 %}
                 {% for i in range(3)%}
                 <div class="d-flex justify-content-start rowmark w-100"
                      style="height:30px;">
@@ -265,15 +265,15 @@
                     <div class="d-flex fs-09 justify-content-center">
                         <div id="seat" class="place status-1"></div>
                         <div class="pl-2 pr-4 text_param">
-                            <span>Место<br>-{{session.price}}₽</span>
+                            <span>Место<br>-{{params['session'].price}}₽</span>
                         </div>
                         <div id="seat" class="place status-2"></div>
                         <div class="pl-2 pr-4 text_param">
-                            <span>Место<br>куплено</span>
+                            <span>Место<br>занято</span>
                         </div>
                         <div id="seat" class="place checked"></div>
                         <div class="pl-2 pr-4 text_param">
-                            <span>Место<br>быбрано</span>
+                            <span>Место<br>выбрано</span>
                         </div>
                     </div>
                 </div>
