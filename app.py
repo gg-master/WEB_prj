@@ -12,6 +12,7 @@ from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.film_sessions import FilmSession
 from data.films import Film
+from forms.order_form import OrderForm
 
 app = Flask(__name__)
 api = Api(app)
@@ -44,7 +45,7 @@ def film_description(film_id):
                            **films_resource.FilmResource().get(film_id).json)
 
 
-@app.route('/timetable/<int:film_id>', methods=['GET'])
+@app.route('/timetable/<int:film_id>', methods=['GET', 'POST'])
 def timetable(film_id):
     locale.setlocale(locale.LC_ALL, "ru_Ru")
     btn_day_active = 1
@@ -59,10 +60,13 @@ def timetable(film_id):
     film_sess = list(filter(lambda f: f.start_time.date() == current_date,
                             db_sess.query(FilmSession).filter(
                                 FilmSession.film_id == film.id).all()))
+    if request.method == "POST":
+        make_order()
     return render_template('timetable.html', title='Расписание',
                            today=days_data, film=film,
                            btn_day_active=btn_day_active,
-                           film_session=film_sess)
+                           film_session=film_sess,
+                           special_mess=(request.method == 'POST'))
 
 
 @app.route('/order/hallplan/<int:session_id>', methods=["GET", 'POST'])
@@ -93,6 +97,11 @@ def hallplan(session_id):
     return render_template('hallplan.html', navbar_title='Выбор мест',
                            prev_win=f'/timetable/{film.id}', params=params,
                            modal_alert=(request.method == 'POST'))
+
+
+def make_order():
+    print(request.values)
+    pass
 
 
 def main():
