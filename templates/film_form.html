@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Добавление фильма</h1>
+<h1> </h1>
+<h1><center><font color="white">Добавление фильма</font></center></h1>
+<h2> </h2>
+<div class="container">
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <p>
-        {{ form.title.label }}<br>
+        <font color="white">{{ form.title.label }}</font><br>
         {{ form.title(class="form-control") }}<br>
         {% for error in form.title.errors %}
             <p class="alert alert-danger" role="alert">
@@ -13,7 +16,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.rating.label }}<br>
+        <font color="white">{{ form.rating.label }}</font><br>
         {{ form.rating(class="form-control") }}<br>
         {% for error in form.rating.errors %}
             <p class="alert alert-danger" role="alert">
@@ -22,7 +25,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.actors.label }}<br>
+        <font color="white">{{ form.actors.label }}</font><br>
         {{ form.actors(class="form-control") }}<br>
         {% for error in form.actors.errors %}
             <p class="alert alert-danger" role="alert">
@@ -31,7 +34,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.producer.label }}<br>
+        <font color="white">{{ form.producer.label }}</font><br>
         {{ form.producer(class="form-control") }}<br>
         {% for error in form.producer.errors %}
             <p class="alert alert-danger" role="alert">
@@ -40,7 +43,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.premiere.label }}<br>
+        <font color="white">{{ form.premiere.label }}</font><br>
         {{ form.premiere(class="form-control") }}<br>
         {% for error in form.premiere.errors %}
             <p class="alert alert-danger" role="alert">
@@ -49,7 +52,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.duration.label }}<br>
+        <font color="white">{{ form.duration.label }}</font><br>
         {{ form.duration(class="form-control") }}<br>
         {% for error in form.duration.errors %}
             <p class="alert alert-danger" role="alert">
@@ -58,7 +61,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.description.label }}<br>
+        <font color="white">{{ form.description.label }}</font><br>
         {{ form.description(class="form-control") }}<br>
         {% for error in form.description.errors %}
             <p class="alert alert-danger" role="alert">
@@ -67,7 +70,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.poster_url.label }}<br>
+        <font color="white">{{ form.poster_url.label }}</font><br>
         {{ form.poster_url(class="form-control") }}<br>
         {% for error in form.poster_url.errors %}
             <p class="alert alert-danger" role="alert">
@@ -76,7 +79,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.trailer_url.label }}<br>
+        <font color="white">{{ form.trailer_url.label }}</font><br>
         {{ form.trailer_url(class="form-control") }}<br>
         {% for error in form.trailer_url.errors %}
             <p class="alert alert-danger" role="alert">
@@ -85,7 +88,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.images.label }}<br>
+        <font color="white">{{ form.images.label }}</font><br>
         {{ form.images(class="form-control") }}<br>
         {% for error in form.images.errors %}
             <p class="alert alert-danger" role="alert">
@@ -94,7 +97,7 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.genres.label }}<br>
+        <font color="white">{{ form.genres.label }}</font><br>
         {{ form.genres(class="form-control") }}<br>
         {% for error in form.genres.errors %}
             <p class="alert alert-danger" role="alert">
@@ -105,4 +108,5 @@
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
 </form>
+</div>>
 {% endblock %}

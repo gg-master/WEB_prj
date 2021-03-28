@@ -62,8 +62,7 @@ class FilmResource(Resource):
         # print(args['genres'], type(args['genres']))
         if args['premiere']:
             film.premiere = datetime.fromisoformat(args['premiere'])
-        # genres = list(map(lambda x: x.lower(), args['genres']))
-        genres = args['genres']
+        genres = list(map(lambda x: x.lower(), args['genres']))
         for genre_name in genres:
             genre = session.query(Genre).filter(
                 Genre.name == genre_name).first()
