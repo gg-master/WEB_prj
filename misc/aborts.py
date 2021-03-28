@@ -45,7 +45,3 @@ def abort_if_film_sess_not_correct(data):
             i < len(timetable) and end_time <= timetable[i][0] or
             i >= len(timetable) or not i):
         abort(400, message='This time is not available')
-
-
-def abort_if_film_sess_not_correct(data):
-    pass
