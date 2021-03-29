@@ -9,16 +9,20 @@ from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
+from data.associations import Genre
+from data.images import Image
 from sqlalchemy.orm import Session
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from data.db_session import SqlAlchemyBase
 from data.film_sessions import FilmSession
+from flask_babelex import Babel
 
 app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+babel = Babel(app)
 
 
 app.config['DEBUG'] = True
@@ -89,6 +93,8 @@ def main():
     db_sess = db_session.create_session()
     admin.add_view(ModelView(FilmSession, db_sess))
     admin.add_view(ModelView(Film, db_sess))
+    admin.add_view(ModelView(Genre, db_sess))
+    admin.add_view(ModelView(Image, db_sess))
     app.register_blueprint(films_api.blueprint)
     api.add_resource(films_resource.FilmResource,
                      '/api/films/<int:film_id>')
@@ -98,6 +104,14 @@ def main():
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
     app.run()
+
+
+
+@babel.localeselector
+def get_locale():
+        # Put your logic here. Application can store locale in
+        # user profile, cookie, session, etc.
+        return 'ru'
 
 
 if __name__ == '__main__':
