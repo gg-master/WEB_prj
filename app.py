@@ -40,7 +40,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 babel = Babel(app)
 
 
-app.config['DEBUG'] = True
+# app.config['DEBUG'] = True
 
 
 @app.route('/add_film', methods=['GET', 'POST'])
