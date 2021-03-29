@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 
@@ -31,7 +30,7 @@ class Film(SqlAlchemyBase, SerializerMixin):
     serialize_rules = ('-images.film', '-comments.film', '-genre.film',
                        '-film_session.film')
     images = orm.relation("Image", back_populates='film')
-    comments = orm.relation("Comment", back_populates='film')
+    # comments = orm.relation("Comment", back_populates='film')
     film_session = orm.relation('FilmSession', back_populates='film')
 
     genre = orm.relation("Genre",

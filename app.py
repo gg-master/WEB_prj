@@ -9,6 +9,11 @@ from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
+from sqlalchemy.orm import Session
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from data.db_session import SqlAlchemyBase
+from data.film_sessions import FilmSession
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,6 +22,8 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
 app.config['DEBUG'] = True
+
+
 @app.route('/add_film', methods=['GET', 'POST'])
 def add_film():
     form = FilmForm()
@@ -78,6 +85,10 @@ def timetable(film_id):
 
 def main():
     db_session.global_init("db/database.db")
+    admin = Admin(app)
+    db_sess = db_session.create_session()
+    admin.add_view(ModelView(FilmSession, db_sess))
+    admin.add_view(ModelView(Film, db_sess))
     app.register_blueprint(films_api.blueprint)
     api.add_resource(films_resource.FilmResource,
                      '/api/films/<int:film_id>')

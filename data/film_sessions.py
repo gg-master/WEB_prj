@@ -7,7 +7,7 @@ from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
-class FilmSession(SqlAlchemyBase, SerializerMixin):
+class FilmSession(SqlAlchemyBase):
     __tablename__ = 'film_sessions'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
