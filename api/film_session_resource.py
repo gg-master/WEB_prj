@@ -12,7 +12,7 @@ parser.add_argument('film_id', required=True, type=int)
 parser.add_argument('hall_id', required=True, type=int)
 parser.add_argument('start_time', default=datetime.now())
 parser.add_argument('end_time', default=datetime.now())
-parser.add_argument('places', default='0' * 50)
+parser.add_argument('places', type=str, default='0' * 120)
 parser.add_argument('price', type=int, default=0)
 
 

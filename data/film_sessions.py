@@ -17,10 +17,10 @@ class FilmSession(SqlAlchemyBase):
     hall_id = sqlalchemy.Column(sqlalchemy.Integer)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
     end_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
-    places = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    places = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='0' * 120)
     price = sqlalchemy.Column(sqlalchemy.Integer)
     film = orm.relation('Film')
 
     def __repr__(self):
         return f"Film session {self.id} {self.film_id} {self.start_time}" \
-               f" {self.end_time} {self.places} {self.price}"
+               f" {self.price}"
