@@ -2,6 +2,7 @@ import locale
 import os
 import pprint
 import pymorphy2
+import threading
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request, session
@@ -9,9 +10,12 @@ from flask_ngrok import run_with_ngrok
 from flask_restful import Api
 
 from api import films_resource, films_api, film_session_resource
+from api.film_session_resource import FilmSessionResource
+from api.films_resource import FilmResource
 from data import db_session
 from data.film_sessions import FilmSession
 from data.films import Film
+from modules import send_email
 
 app = Flask(__name__)
 api = Api(app)
@@ -78,7 +82,7 @@ def hallplan(session_id):
         FilmSession.id == session_id).first()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
     # Установка некоторых кукки
-    session['price_session'] = sess.price
+    session['session_id'] = sess.id
     # Создание словаря с параметрами для шаблона
     params = {'session': sess, 'film': film}
     if request.method == 'POST' and request.form:
@@ -110,9 +114,24 @@ def hallplan(session_id):
 
 
 def make_order():
-    print(request.values)
-    print(session.get('price_session'))
-    pass
+    film_session = FilmSessionResource().get(
+        session.get('session_id')).json['film_sess']
+    film = FilmResource().get(film_session['film_id']).json['film']
+    places = [i for i in request.form if request.form.get(i) == 'label']
+    params = {
+        'number_places': places,
+        'film_title': film['title'],
+        'hall_id': film_session['hall_id'],
+        'time_start': film_session['start_time'],
+        'time_end': film_session['end_time'],
+        'phone': '+7 (8442) 93-52-52',
+        'msg-text': 'Ваши билеты, заказанные на сайте FilmCenter.'
+                    '\nНа это письмо не нужно отвечать.'
+    }
+    send_thread = threading.Thread(
+        target=send_email.send_mail,
+        args=(request.form.get('email'), params,))
+    send_thread.start()
 
 
 def main():
