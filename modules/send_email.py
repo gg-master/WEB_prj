@@ -23,6 +23,7 @@ def send_mail(subject, text: dict):
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
+    msg['To'] = subject
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
