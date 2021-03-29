@@ -37,4 +37,5 @@ class Film(SqlAlchemyBase, SerializerMixin):
                          secondary="association_film_genres", )
 
     def __repr__(self):
-        return f"Film {self.title} {self.rating}"
+        return f"ID: {self.id}\n" \
+               f"title: {self.title}"
