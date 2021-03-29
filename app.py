@@ -28,6 +28,8 @@ from flask_admin.contrib.sqla import ModelView
 from data.db_session import SqlAlchemyBase
 from data.film_sessions import FilmSession
 from flask_babelex import Babel
+from flask_admin.contrib.fileadmin import FileAdmin
+from flask import Markup
 
 from modules import send_email
 
@@ -184,14 +186,59 @@ def make_order():
     send_thread.start()
 
 
+class FilmView(ModelView):
+    can_view_details = True
+    column_searchable_list = ['title', 'rating', 'actors', 'producer',
+                              'premiere', 'duration', 'description']
+    column_filters = ['title', 'rating', 'premiere', 'duration']
+
+    def _description_formatter(view, context, model, name):
+        return model.description[:20]
+
+    def _actors_formatter(view, context, model, name):
+        return model.actors.split(', ')[0]
+
+    def _poster_url_formatter(view, context, model, name):
+        if model.poster_url:
+           markupstring = f"<a href='{model.poster_url}'>link</a>"
+           return Markup(markupstring)
+        else:
+           return ""
+
+    def _trailer_url_formatter(view, context, model, name):
+        if model.trailer_url:
+           markupstring = f"<a href='{model.trailer_url}'>link</a>"
+           return Markup(markupstring)
+        else:
+           return ""
+
+    column_formatters = {
+        'actors': _actors_formatter,
+        'description': _description_formatter,
+        'poster_url': _poster_url_formatter,
+        'trailer_url': _trailer_url_formatter
+    }
+
+
+class FilmSessionView(ModelView):
+    can_view_details = True
+    column_searchable_list = ['film_id', 'hall_id', 'start_time', 'end_time',
+                              'price']
+    column_filters = ['film_id', 'hall_id', 'start_time', 'end_time',
+                              'price']
+    list_template = 'film_session.html'
+
+
 def main():
+    path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init("db/database.db")
     admin = Admin(app)
     db_sess = db_session.create_session()
-    admin.add_view(ModelView(FilmSession, db_sess))
-    admin.add_view(ModelView(Film, db_sess))
-    admin.add_view(ModelView(Genre, db_sess))
-    admin.add_view(ModelView(Image, db_sess))
+    admin.add_view(FilmSessionView(FilmSession, db_sess))
+    admin.add_view(FilmView(Film, db_sess, category='Film'))
+    admin.add_view(ModelView(Genre, db_sess, category='Film'))
+    admin.add_view(ModelView(Image, db_sess, category='Film'))
+    admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
     app.register_blueprint(films_api.blueprint)
     api.add_resource(films_resource.FilmResource,
                      '/api/films/<int:film_id>')
