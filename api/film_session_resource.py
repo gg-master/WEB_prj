@@ -22,7 +22,7 @@ class FilmSessionResource(Resource):
         session = db_session.create_session()
         film_sess = session.query(FilmSession).get(film_sess_id)
         return jsonify({'film_sess': film_sess.to_dict(
-            only=('film_id', 'hall_id', 'start_time', 'end_time', 'places',
+            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time', 'places',
                   'price'))})
 
     def delete(self, film_sess_id):
@@ -53,7 +53,7 @@ class FilmSessionListResource(Resource):
         session = db_session.create_session()
         film_sesses = session.query(FilmSession).all()
         return jsonify({'films': [film_sess.to_dict(
-            only=('film_id', 'hall_id', 'start_time', 'end_time', 'places',
+            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time', 'places',
                   'price')) for film_sess in film_sesses]})
 
     def post(self):

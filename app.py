@@ -5,6 +5,7 @@ import pymorphy2
 import threading
 from datetime import datetime, timedelta
 
+import requests
 from flask import Flask, render_template, request, session
 from flask_ngrok import run_with_ngrok
 from flask_restful import Api
@@ -100,7 +101,7 @@ def hallplan(session_id):
         # Склоняем слово "билет"
         morph = pymorphy2.MorphAnalyzer()
         params['ticket_w'] = morph.parse('билет')[
-                0].make_agree_with_number(len(arr)).word
+            0].make_agree_with_number(len(arr)).word
         # Отрисовываем экран с отображением
         # всех билетов и их итоговой стоимости
         return render_template('last_order_stage.html',
@@ -118,6 +119,21 @@ def make_order():
         session.get('session_id')).json['film_sess']
     film = FilmResource().get(film_session['film_id']).json['film']
     places = [i for i in request.form if request.form.get(i) == 'label']
+    list_places_in_db = list(film_session['places'])
+    for i in places:
+        row, col = i.split('-')
+        number_place = ((int(row) - 1) * 20) + (int(col) - 1)
+        list_places_in_db[number_place] = '1'
+    db_threading = threading.Thread(
+        target=requests.put,
+        args=(f'http://localhost:5000/api/film_sessions/{film_session["id"]}',
+              {'film_id': film_session["film_id"],
+               'hall_id': film_session['hall_id'],
+               'start_time': film_session['start_time'],
+               'end_time': film_session['end_time'],
+               'places': ''.join(list_places_in_db),
+               'price': film_session['price']}))
+    db_threading.start()
     params = {
         'number_places': places,
         'film_title': film['title'],
