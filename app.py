@@ -13,6 +13,7 @@ import requests
 from flask import Flask, render_template, request, session
 from flask_ngrok import run_with_ngrok
 from flask_restful import Api
+from wtforms.validators import DataRequired
 
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
@@ -191,6 +192,9 @@ class FilmView(ModelView):
     column_searchable_list = ['title', 'rating', 'actors', 'producer',
                               'premiere', 'duration', 'description']
     column_filters = ['title', 'rating', 'premiere', 'duration']
+    form_excluded_columns = ['film_session']
+    inline_models = [(Image, dict(form_columns=['id', 'image_url']))]
+
 
     def _description_formatter(view, context, model, name):
         return model.description[:20]
@@ -200,17 +204,17 @@ class FilmView(ModelView):
 
     def _poster_url_formatter(view, context, model, name):
         if model.poster_url:
-           markupstring = f"<a href='{model.poster_url}'>link</a>"
-           return Markup(markupstring)
+            markupstring = f"<a href='{model.poster_url}'>link</a>"
+            return Markup(markupstring)
         else:
-           return ""
+            return ""
 
     def _trailer_url_formatter(view, context, model, name):
         if model.trailer_url:
-           markupstring = f"<a href='{model.trailer_url}'>link</a>"
-           return Markup(markupstring)
+            markupstring = f"<a href='{model.trailer_url}'>link</a>"
+            return Markup(markupstring)
         else:
-           return ""
+            return ""
 
     column_formatters = {
         'actors': _actors_formatter,
@@ -224,8 +228,7 @@ class FilmSessionView(ModelView):
     can_view_details = True
     column_searchable_list = ['film_id', 'hall_id', 'start_time', 'end_time',
                               'price']
-    column_filters = ['film_id', 'hall_id', 'start_time', 'end_time',
-                              'price']
+    column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
     list_template = 'film_session.html'
 
 
@@ -252,12 +255,11 @@ def main():
     app.run()
 
 
-
 @babel.localeselector
 def get_locale():
-        # Put your logic here. Application can store locale in
-        # user profile, cookie, session, etc.
-        return 'ru'
+    # Put your logic here. Application can store locale in
+    # user profile, cookie, session, etc.
+    return 'ru'
 
 
 if __name__ == '__main__':
