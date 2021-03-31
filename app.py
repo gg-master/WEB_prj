@@ -7,14 +7,14 @@ from datetime import datetime, timedelta
 from requests import get, put, post, delete
 from flask import Flask, render_template, request, redirect
 # from flask_ngrok import run_with_ngrok
-
-
+import random
+import string
 import requests
 from flask import Flask, render_template, request, session
 from flask_ngrok import run_with_ngrok
 from flask_restful import Api
 from wtforms.validators import DataRequired
-
+from data.places import Place
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
 from forms.film import FilmForm
@@ -223,6 +223,7 @@ class FilmView(ModelView):
         else:
             return ""
 
+
     column_formatters = {
         'actors': _actors_formatter,
         'description': _description_formatter,
@@ -238,6 +239,21 @@ class FilmSessionView(ModelView):
     column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
     list_template = 'film_session.html'
 
+    def after_model_change(self, form, model, is_created):
+        db_sess = db_session.create_session()
+        symbols = list(string.ascii_uppercase + string.digits)
+        for i in range(1, 7):
+            for j in range(1, 21):
+                place = Place(
+                    film_session_id=model.id,
+                    row_id=i,
+                    seat_id=j,
+                    status=False,
+                    code=''.join(random.sample(symbols, 6))
+                )
+                db_sess.add(place)
+                db_sess.commit()
+
 
 def main():
     path = os.path.join(os.path.dirname(__file__), 'static')
@@ -245,6 +261,7 @@ def main():
     admin = Admin(app)
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess))
+    admin.add_view(ModelView(Place, db_sess))
     admin.add_view(FilmView(Film, db_sess, category='Film'))
     admin.add_view(ModelView(Genre, db_sess, category='Film'))
     admin.add_view(ModelView(Image, db_sess, category='Film'))
