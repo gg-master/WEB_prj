@@ -3,6 +3,7 @@ import os
 import pprint
 import pymorphy2
 import threading
+from waitress import serve
 from datetime import datetime, timedelta
 from requests import get, put, post, delete
 from flask import Flask, render_template, request, redirect
@@ -267,6 +268,7 @@ class PlaceView(ModelView):
     column_filters = ['film_session_id', 'row_id', 'seat_id', 'status']
     page_size = 20
 
+
 def main():
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init("db/database.db")
@@ -286,9 +288,10 @@ def main():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-    # port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
-    app.run()
+    # app.run()
+    serve(app, host='0.0.0.0', port=port)
 
 
 @babel.localeselector
