@@ -20,7 +20,6 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 Mako==1.1.4
 MarkupSafe==1.1.1
-numpy==1.20.2
 pymorphy2==0.9.1
 pymorphy2-dicts-ru==2.4.417127.4579844
 PyQt5==5.15.4

@@ -91,11 +91,9 @@ class Ticket:
     def make_qrcode(self):
         """Возврадащет сгенеррированный Qrcode как объект Qpixmap"""
         import qrcode
-        from numpy.compat import unicode
-        text = unicode(
-            f'Билет на фильм {self.title} '
-            f'подтвержден. Ждем Вас на сеансе в {self.time_start}.\n'
-            f'Ваш код подтверждения - {self.code}')
+        text = f'Билет на фильм {self.title} ' \
+            f'подтвержден. Ждем Вас на сеансе в {self.time_start}.\n' \
+            f'Ваш код подтверждения - {self.code}'
         return qrcode.make(text, image_factory=Image).pixmap()
 
     def save_tct(self):
