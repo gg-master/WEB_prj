@@ -3,11 +3,10 @@ import os
 import pprint
 import pymorphy2
 import threading
-from waitress import serve
 from datetime import datetime, timedelta
 from requests import get, put, post, delete
 from flask import Flask, render_template, request, redirect
-# from flask_ngrok import run_with_ngrok
+from flask_ngrok import run_with_ngrok
 import random
 import string
 import requests
@@ -37,7 +36,7 @@ from modules import send_email
 
 app = Flask(__name__)
 api = Api(app)
-# run_with_ngrok(app)
+run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 babel = Babel(app)
 
@@ -288,10 +287,9 @@ def main():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-    # port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
-    app.run()
-    # serve(app, host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+    # app.run()
 
 
 @babel.localeselector
