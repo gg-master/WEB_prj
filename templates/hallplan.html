@@ -147,7 +147,7 @@
     <div class="container"
          style="margin-top: 1.5rem; margin-bottom: 1.5rem">
         <div class="d-flex flex-row">
-            <div class="d-flex" style="height: 90px;">
+            <div class="d-flex" style="height: 100px;">
                 {% if params['film'].poster_url == None %}
                 <img src="/static/img/none_img.jpg"
                      class="rounded movie-vposter"
@@ -235,7 +235,7 @@
                          style="width: 950px; left:75px; padding-left: 4rem; padding-right: 3rem">
                         <!--Клетки кресел-->
                         {% set data = namespace(row=1, col=0)%}
-                        {% for i in params['session'].places %}
+                        {% for i in params['places'] %}
                         {% if data.col >= 20 %}
                         {% set data.row = data.row + 1 %}
                         {% set data.col = 0 %}
@@ -244,7 +244,7 @@
                         <label class="switchable">
                             <input form="hallplan" type='checkbox'
                                    name="{{data.row}}-{{data.col}}">
-                            {% if i == '1' %}
+                            {% if i.status %}
                             <div id="seat"
                                  class="d-flex flex-column status-2 place text_param"
                                  data-toggle="tooltip"
@@ -263,7 +263,7 @@
                         {% endfor %}
                     </div>
                     <!--Цикл для столбцов-->
-                    {% set count = params['session'].places|length // 20 + 1 %}
+                    {% set count = (params['places']|length / 20)|round|int %}
                     {% for i in range(count)%}
                     <div class="d-flex justify-content-start rowmark w-100"
                          style="height:30px;">

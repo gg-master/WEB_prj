@@ -29,11 +29,11 @@ def send_mail(subject, text: dict):
 
     msg.attach(MIMEText(text['msg-text']))
 
-    for f in text['number_places']:
+    for f, code in text['places'].items():
         ticket = Ticket(text['film_title'], text['hall_id'],
                         f.split('-')[0], f.split('-')[1],
                         text['time_start'], text['time_end'],
-                        text['phone']).bytes_str
+                        text['phone'], code).bytes_str
         part = MIMEApplication(
             ticket,
             Name=f'Билет на {text["film_title"]}-{f}.jpg'

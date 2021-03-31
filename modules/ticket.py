@@ -53,7 +53,7 @@ class Ticket:
     выбора пути сохранения и созраняет билет по выбранному пути"""
 
     def __init__(self, film_title, cinema_hall_id,
-                 place_row, place_col, time_s, time_to, phone):
+                 place_row, place_col, time_s, time_to, phone, code):
         if os.getcwd().endswith('modules'):
             os.chdir('..')
         self.title = film_title
@@ -63,6 +63,7 @@ class Ticket:
         self.time_start = time_s
         self.time_end = time_to
         self.phone = phone
+        self.code = code
         # Разметка
         app = QApplication(sys.argv)
         self.pixmap = QPixmap(path_for_system_img + 'ticket_new.jpg')
@@ -93,7 +94,8 @@ class Ticket:
         from numpy.compat import unicode
         text = unicode(
             f'Билет на фильм {self.title} '
-            f'подтвержден. Ждем Вас на сеансе в {self.time_start}')
+            f'подтвержден. Ждем Вас на сеансе в {self.time_start}.\n'
+            f'Ваш код подтверждения - {self.code}')
         return qrcode.make(text, image_factory=Image).pixmap()
 
     def save_tct(self):

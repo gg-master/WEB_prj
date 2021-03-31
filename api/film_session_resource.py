@@ -12,7 +12,7 @@ parser.add_argument('film_id', required=True, type=int)
 parser.add_argument('hall_id', required=True, type=int)
 parser.add_argument('start_time', default=datetime.now())
 parser.add_argument('end_time', default=datetime.now())
-parser.add_argument('places', type=str, default='0' * 120)
+# parser.add_argument('places', type=str, default='0' * 120)
 parser.add_argument('price', type=int, default=0)
 
 
@@ -22,7 +22,7 @@ class FilmSessionResource(Resource):
         session = db_session.create_session()
         film_sess = session.query(FilmSession).get(film_sess_id)
         return jsonify({'film_sess': film_sess.to_dict(
-            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time', 'places',
+            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time',
                   'price'))})
 
     def delete(self, film_sess_id):
@@ -42,7 +42,6 @@ class FilmSessionResource(Resource):
         film_sess.hall_id = args['hall_id']
         film_sess.start_time = datetime.fromisoformat(args['start_time'])
         film_sess.end_time = datetime.fromisoformat(args['end_time'])
-        film_sess.places = args['places']
         film_sess.price = args['price']
         session.commit()
         return jsonify({'success': 'OK'})
@@ -53,7 +52,7 @@ class FilmSessionListResource(Resource):
         session = db_session.create_session()
         film_sesses = session.query(FilmSession).all()
         return jsonify({'films': [film_sess.to_dict(
-            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time', 'places',
+            only=('id', 'film_id', 'hall_id', 'start_time', 'end_time',
                   'price')) for film_sess in film_sesses]})
 
     def post(self):
@@ -64,7 +63,6 @@ class FilmSessionListResource(Resource):
                                 hall_id=args['hall_id'],
                                 start_time=args['start_time'],
                                 end_time=args['end_time'],
-                                places=args['places'],
                                 price=args['price']
         )
         session.add(film_sess)

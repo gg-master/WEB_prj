@@ -118,11 +118,13 @@ def hallplan(session_id):
     # Получение объекта сеанса и фильма для более удобной работы с объектами
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
+    places = db_sess.query(Place).filter(
+        Place.film_session_id == sess.id).all()
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
     # Установка некоторых кукки
     session['session_id'] = sess.id
     # Создание словаря с параметрами для шаблона
-    params = {'session': sess, 'film': film}
+    params = {'session': sess, 'film': film, 'places': places}
     if request.method == 'POST' and request.form:
         # Узнаем какие номера билетов имеются
         arr = [i for i in request.form
@@ -159,27 +161,30 @@ def create_schedule():
 
 
 def make_order():
+    db_sess = db_session.create_session()
+    # Получение сеанса фильма
     film_session = FilmSessionResource().get(
         session.get('session_id')).json['film_sess']
+    # Получение фильма
     film = FilmResource().get(film_session['film_id']).json['film']
+    # Узнаем выбранные места из запроса
     places = [i for i in request.form if request.form.get(i) == 'label']
-    list_places_in_db = list(film_session['places'])
+    # Получение всех мест для сессии
+    list_places_in_db = db_sess.query(Place).filter(
+        Place.film_session_id == film_session['id']).all()
+    places_dct = {}
+    # Перебираем все выбранные места и измением статус места
     for i in places:
-        row, col = i.split('-')
-        number_place = ((int(row) - 1) * 20) + (int(col) - 1)
-        list_places_in_db[number_place] = '1'
-    db_threading = threading.Thread(
-        target=requests.put,
-        args=(f'http://localhost:5000/api/film_sessions/{film_session["id"]}',
-              {'film_id': film_session["film_id"],
-               'hall_id': film_session['hall_id'],
-               'start_time': film_session['start_time'],
-               'end_time': film_session['end_time'],
-               'places': ''.join(list_places_in_db),
-               'price': film_session['price']}))
-    db_threading.start()
+        row, col = list(map(int, i.split('-')))
+        place = list(filter(lambda place_db:
+                            place_db.row_id == row and place_db.seat_id == col,
+                            list_places_in_db))[0]
+        place.status = True
+        places_dct[i] = place.code
+    # Коммитим изменения
+    db_sess.commit()
     params = {
-        'number_places': places,
+        'places': places_dct,
         'film_title': film['title'],
         'hall_id': film_session['hall_id'],
         'time_start': film_session['start_time'],
