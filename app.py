@@ -151,6 +151,13 @@ def hallplan(session_id):
                            modal_alert=(request.method == 'POST'))
 
 
+@app.route('/make_schedule', methods=['POST'])
+def create_schedule():
+    print('Yahoo')
+    print([i for i in request.values])
+    return redirect('/admin/filmsession/')
+
+
 def make_order():
     film_session = FilmSessionResource().get(
         session.get('session_id')).json['film_sess']

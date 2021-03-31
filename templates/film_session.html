@@ -1,5 +1,8 @@
 {% extends 'admin/model/list.html' %}
 {% block body %}
-    Hello World from MyView!
+<form action="/make_schedule" method="post">
+<input class="btn btn-primary" id="submit" name="submit" type="submit" value="Сгенерировать расписание">
+ </form>
+    <h6> </h6>
     {{ super() }}
 {% endblock %}
