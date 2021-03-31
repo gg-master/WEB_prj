@@ -260,13 +260,20 @@ class FilmSessionView(ModelView):
                 db_sess.commit()
 
 
+class PlaceView(ModelView):
+    can_view_details = True
+    column_searchable_list = ['film_session_id', 'row_id', 'seat_id',
+                              'status']
+    column_filters = ['film_session_id', 'row_id', 'seat_id', 'status']
+    page_size = 20
+
 def main():
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init("db/database.db")
     admin = Admin(app)
     db_sess = db_session.create_session()
-    admin.add_view(FilmSessionView(FilmSession, db_sess))
-    admin.add_view(ModelView(Place, db_sess))
+    admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
+    admin.add_view(PlaceView(Place, db_sess, category='Sessions'))
     admin.add_view(FilmView(Film, db_sess, category='Film'))
     admin.add_view(ModelView(Genre, db_sess, category='Film'))
     admin.add_view(ModelView(Image, db_sess, category='Film'))
