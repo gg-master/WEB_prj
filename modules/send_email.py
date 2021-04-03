@@ -9,7 +9,7 @@ from email.utils import formatdate
 
 from dotenv import load_dotenv
 
-from modules.ticket import Ticket
+from modules.tiket_PIL import Ticket
 
 
 def send_mail(subject, text: dict):
