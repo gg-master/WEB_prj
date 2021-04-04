@@ -17,9 +17,8 @@ def global_init(db_file):
     if not db_file or not db_file.strip():
         raise Exception("Необходимо указать файл базы данных.")
     # f'postgresql://postgres:2BoBa1Tolya@127.0.0.1:5432/postgres'
-    # 'postgresql://moyitlgfimksgq:0cdf337bfa23cd7380c5a709b6e12d3c64329701b15265d6059cb24c8859eb43@ec2-54-235-108-217.compute-1.amazonaws.com:5432/d6ooro4kqjecju'
-    conn_str = 'postgresql://moyitlgfimksgq:0cdf337bfa23cd7380c5a709b6e12d3' \
-               'c64329701b15265d6059cb24c8859eb43@ec2-54-235-108-217.c' \
+    conn_str = 'postgresql://moyitlgfimksgq:0cdf337bfa23cd7380c5a709b6e12' \
+               'd3c64329701b15265d6059cb24c8859eb43@ec2-54-235-108-217.c' \
                'ompute-1.amazonaws.com:5432/d6ooro4kqjecju'
     print(f"Подключение к базе данных по адресу {conn_str}")
 
