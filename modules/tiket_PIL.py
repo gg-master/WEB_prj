@@ -22,9 +22,9 @@ class Ticket:
         self.time_end = time_to
         self.phone = phone
         self.code = code
-        font17 = ImageFont.truetype('/.fonts/arial.ttf', size=17)
-        font15 = ImageFont.truetype('/.fonts/arial.ttf', size=15)
-        font13 = ImageFont.truetype('/.fonts/arial.ttf', size=13)
+        font17 = ImageFont.truetype('.fonts/arial.ttf', size=17)
+        font15 = ImageFont.truetype('.fonts/arial.ttf', size=15)
+        font13 = ImageFont.truetype('.fonts/arial.ttf', size=13)
         self.im = Image.open(path_for_system_img + 'ticket_new.jpg')
         draw_text = ImageDraw.Draw(self.im)
         draw_text.text(
