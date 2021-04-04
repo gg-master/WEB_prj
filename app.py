@@ -115,8 +115,9 @@ def hallplan(session_id):
     # Получение объекта сеанса и фильма для более удобной работы с объектами
     sess = db_sess.query(FilmSession).filter(
         FilmSession.id == session_id).first()
-    places = db_sess.query(Place).filter(
-        Place.film_session_id == sess.id).all()
+    places = sorted(db_sess.query(Place).filter(
+        Place.film_session_id == sess.id).all(),
+                    key=lambda x: x.id)
     film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
     # Установка некоторых кукки
     session['session_id'] = sess.id
@@ -285,9 +286,9 @@ def main():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-    # app.run()
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host='0.0.0.0', port=port)
+    app.run()
 
 
 @babel.localeselector
