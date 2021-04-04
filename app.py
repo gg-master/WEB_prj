@@ -36,7 +36,7 @@ from modules import send_email
 
 app = Flask(__name__)
 api = Api(app)
-run_with_ngrok(app)
+# run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 babel = Babel(app)
 
@@ -270,7 +270,7 @@ class PlaceView(ModelView):
 
 def main():
     path = os.path.join(os.path.dirname(__file__), 'static')
-    db_session.global_init("db/database.db")
+    db_session.global_init('moyitlgfimksgq')
     admin = Admin(app)
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
