@@ -285,9 +285,9 @@ def main():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-    # port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+    # app.run()
 
 
 @babel.localeselector
