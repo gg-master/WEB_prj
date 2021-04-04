@@ -270,7 +270,7 @@ class PlaceView(ModelView):
 
 def main():
     path = os.path.join(os.path.dirname(__file__), 'static')
-    db_session.global_init('moyitlgfimksgq')
+    db_session.global_init('connect_to_db_in_db_session_file')
     admin = Admin(app)
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
