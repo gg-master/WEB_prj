@@ -1,19 +1,16 @@
-import locale
 import os
 import pprint
+import random
+import string
 import pymorphy2
 import threading
 from datetime import datetime, timedelta
 from requests import get, put, post, delete
-from flask import Flask, render_template, request, redirect
 from flask_ngrok import run_with_ngrok
-import random
-import string
-import requests
-from flask import Flask, render_template, request, session
-from flask_ngrok import run_with_ngrok
-from flask_restful import Api
 from wtforms.validators import DataRequired
+from flask_ngrok import run_with_ngrok
+from flask import Flask, render_template, request, session, redirect
+from flask_restful import Api
 from data.places import Place
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
@@ -21,14 +18,15 @@ from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
-from data.associations import Genre
 from data.images import Image
-from sqlalchemy.orm import Session
+from data.associations import Genre
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from sqlalchemy.orm import Session
 from data.db_session import SqlAlchemyBase
 from data.film_sessions import FilmSession
 from flask_babelex import Babel
+from babel.dates import format_datetime
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask import Markup
 
@@ -46,6 +44,7 @@ babel = Babel(app)
 
 @app.route('/add_film', methods=['GET', 'POST'])
 def add_film():
+    # TODO Переделать метод для работы с удаленного сервера
     form = FilmForm()
     if form.validate_on_submit():
         data = {'title': form.title.data, 'rating': form.rating.data,
@@ -89,7 +88,6 @@ def film_description(film_id):
 
 @app.route('/timetable/<int:film_id>', methods=['GET', 'POST'])
 def timetable(film_id):
-    locale.setlocale(locale.LC_ALL, "ru_Ru")
     btn_day_active = 1
     if request.args:
         btn_day_active = int([i for i in request.args][0])
@@ -107,13 +105,12 @@ def timetable(film_id):
     return render_template('timetable.html', title='Расписание',
                            today=days_data, film=film,
                            btn_day_active=btn_day_active,
-                           film_session=film_sess,
+                           film_session=film_sess, locate=format_datetime,
                            special_mess=(request.method == 'POST'))
 
 
 @app.route('/order/hallplan/<int:session_id>', methods=["GET", 'POST'])
 def hallplan(session_id):
-    locale.setlocale(locale.LC_ALL, "ru_Ru")
     db_sess = db_session.create_session()
     # Получение объекта сеанса и фильма для более удобной работы с объектами
     sess = db_sess.query(FilmSession).filter(
@@ -124,7 +121,8 @@ def hallplan(session_id):
     # Установка некоторых кукки
     session['session_id'] = sess.id
     # Создание словаря с параметрами для шаблона
-    params = {'session': sess, 'film': film, 'places': places}
+    params = {'session': sess, 'film': film, 'places': places,
+              'locate': format_datetime}
     if request.method == 'POST' and request.form:
         # Узнаем какие номера билетов имеются
         arr = [i for i in request.form
