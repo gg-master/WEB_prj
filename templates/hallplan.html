@@ -170,9 +170,7 @@
                         </div>
                         <div class="pr-3">|</div>
                         <div class="pr-3">
-                            {{params['session'].start_time.strftime('%d %A
-                            в
-                            %H:%M')}}
+                            {{params['locate'](params['session'].start_time, 'dd EEEE в HH:mm', locale='ru')}}
                         </div>
                         <div class="pr-3">|</div>
                         <div>Зал {{params['session'].hall_id}}</div>

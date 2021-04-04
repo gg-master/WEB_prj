@@ -114,7 +114,7 @@
                             <span>Сегодня</span>
                             {% else %}
                             {% set day_c = day.date.weekday() %}
-                            <span>{{day.date.strftime("%A")}}</span>
+                            <span>{{locate(day.date, 'EEEE', locale='ru')}}</span>
                             {% endif %}
                         </button>
                         {% endfor %}
