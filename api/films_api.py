@@ -1,10 +1,9 @@
-import pprint
-from datetime import datetime
+from datetime import datetime, date
 
 import flask
-import requests
 from flask import jsonify, request
-
+from sqlalchemy import func
+from sqlalchemy.sql.expression import and_
 from data import db_session
 from data.associations import Genre
 from data.films import Film
@@ -19,12 +18,10 @@ blueprint = flask.Blueprint(
 @blueprint.route('/api/films/recommendations', methods=['GET'])
 def get_films_recommendations():
     db_sess = db_session.create_session()
-    new_films = sorted(
-        db_sess.query(Film).filter(
-            Film.premiere != None).all(),
-        key=lambda x: x.premiere.month == datetime.now().month)[:5]
+    new_films = list(filter(lambda x: x.premiere.month == datetime.now().month,
+        db_sess.query(Film).filter(Film.premiere != None).all()))[:5]
     most_watched_films = sorted(db_sess.query(Film).all(),
-                                key=lambda x: x.watchers)[:5]
+                                key=lambda x: x.watchers, reverse=True)[:5]
     return jsonify(
         {
             'new_films': [
@@ -80,18 +77,20 @@ def get_filtered_films():
                 filtered_params[i.split('_')[0]] = v
     req = []
     if 'title' in filtered_params:
-        req.append(Film.title.like(f'%{filtered_params["title"]}%'))
+        req.append(Film.title.ilike(f'%{filtered_params["title"]}%'))
     if 'genre' in filtered_params:
         req.append(Film.genre.contains(db_sess.query(Genre).filter(
             Genre.name == filtered_params["genre"]).first()))
     if 'year' in filtered_params:
-        req.append(Film.premiere.like(f'%{filtered_params["year"]}%'))
+        st_date = date(int(filtered_params['year']), 1, 1)
+        end_date = date(int(filtered_params['year']), 12, 31)
+        req.append(and_(func.date(Film.premiere) <= end_date))
+        req.append(and_(func.date(Film.premiere) >= st_date))
     if 'duration' in filtered_params:
-        req.append(Film.duration.like(filtered_params['duration']))
+        req.append(Film.duration == int(filtered_params['duration']))
     if 'producer' in filtered_params:
         req.append(Film.producer.like(filtered_params['producer']))
     filtered_films = db_sess.query(Film).filter(*req).all()
-    pprint.pprint(filtered_films)
     return jsonify({'films': [film.to_dict(
         only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',
               'duration', 'description', 'poster_url', 'images',

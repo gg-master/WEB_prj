@@ -299,7 +299,7 @@
 
     .my-card-deck {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
         grid-gap: .5rem;
     }
 </style>
@@ -316,9 +316,10 @@
                     <img src="{{ film.poster_url }}"
                          class="card-img-top" alt="" style="height: 70%">
                     {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{film.title }}</h5>
-                        <p class="card-text">{{
+                    <div class="card-body" style="padding-top: 0.7rem">
+                        <h5 class="card-title">{{ film.title }}</h5>
+                        <p class="card-text" style="margin-bottom: 0;
+                        padding-bottom: 0.1rem">{{
                             film.genre|map(attribute='name')|join(', ')
                             }}</p>
                         {% if film.premiere != None %}
