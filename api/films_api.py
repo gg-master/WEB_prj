@@ -18,8 +18,11 @@ blueprint = flask.Blueprint(
 @blueprint.route('/api/films/recommendations', methods=['GET'])
 def get_films_recommendations():
     db_sess = db_session.create_session()
-    new_films = list(filter(lambda x: x.premiere.month == datetime.now().month,
-        db_sess.query(Film).filter(Film.premiere != None).all()))[:5]
+    new_films = list(filter(lambda x:
+                            x.premiere.month == datetime.now().month
+                            and x.premiere.year == datetime.now().year,
+                            db_sess.query(Film).filter(
+                                Film.premiere != None).all()))[:5]
     most_watched_films = sorted(db_sess.query(Film).all(),
                                 key=lambda x: x.watchers, reverse=True)[:5]
     return jsonify(
