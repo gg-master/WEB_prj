@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 from requests import get, put, post, delete
 from flask_ngrok import run_with_ngrok
 from wtforms.validators import DataRequired
-from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, request, session, redirect
 from flask_restful import Api
 from data.places import Place
@@ -20,6 +19,7 @@ from api.films_resource import FilmResource
 from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
+from data.db_session import __factory
 from data.films import Film
 from data.images import Image
 from data.associations import Genre
@@ -279,6 +279,14 @@ class PlaceView(ModelView):
                               'status']
     column_filters = ['film_session_id', 'row_id', 'seat_id', 'status']
     page_size = 20
+
+
+@app.teardown_request
+def shutdown_session(exception=None):
+    if __factory is not None:
+        __factory.session.remove()
+    if exception is not None:
+        print(exception)
 
 
 def main():
