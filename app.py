@@ -301,7 +301,7 @@ def main():
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
 
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
     scheduler.add_job(func=delete_film_session_every_week,
                       trigger="interval", hours=24)
     scheduler.start()
