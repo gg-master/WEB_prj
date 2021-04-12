@@ -206,11 +206,14 @@ class FilmView(ModelView):
     form_excluded_columns = ['film_session']
     inline_models = [(Image, dict(form_columns=['id', 'image_url']))]
 
-
     def _description_formatter(view, context, model, name):
+        if model.description is None:
+            return ''
         return model.description[:20]
 
     def _actors_formatter(view, context, model, name):
+        if model.actors is None:
+            return ''
         return model.actors.split(', ')[0]
 
     def _poster_url_formatter(view, context, model, name):
@@ -226,7 +229,6 @@ class FilmView(ModelView):
             return Markup(markupstring)
         else:
             return ""
-
 
     column_formatters = {
         'actors': _actors_formatter,
