@@ -1,4 +1,7 @@
 import os
+import time
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 import pprint
 import random
 import string
@@ -244,6 +247,7 @@ class FilmSessionView(ModelView):
                               'price']
     column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
     list_template = 'film_session.html'
+    form_excluded_columns = ['places']
 
     def after_model_change(self, form, model, is_created):
         db_sess = db_session.create_session()
@@ -259,6 +263,14 @@ class FilmSessionView(ModelView):
                 )
                 db_sess.add(place)
                 db_sess.commit()
+
+
+def delete_film_session_every_week():
+    db_sess = db_session.create_session()
+    current_time_minus_week = datetime.now() - timedelta(weeks=1)
+    db_sess.query(FilmSession).filter(FilmSession.end_time <
+                                      current_time_minus_week).delete()
+    db_sess.commit()
 
 
 class PlaceView(ModelView):
@@ -288,6 +300,11 @@ def main():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=delete_film_session_every_week,
+                      trigger="interval", hours=24)
+    scheduler.start()
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
     app.run()
