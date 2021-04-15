@@ -292,7 +292,8 @@ def shutdown_session(exception=None):
         print(exception)
 
 
-def main():
+def create_app():
+    logging.info('Connected to database and created needed recourse')
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
     admin = Admin(app)
@@ -316,9 +317,7 @@ def main():
     scheduler.add_job(func=delete_film_session_every_week,
                       trigger="interval", hours=24)
     scheduler.start()
-    # port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
-    app.run()
+    return app
 
 
 @babel.localeselector
@@ -329,4 +328,7 @@ def get_locale():
 
 
 if __name__ == '__main__':
-    main()
+    create_app()
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host='0.0.0.0', port=port)
+    app.run()
