@@ -3,6 +3,7 @@ import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 import pprint
+import logging
 import random
 import string
 import pymorphy2
@@ -35,6 +36,8 @@ from flask import Markup
 
 from modules import send_email
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
