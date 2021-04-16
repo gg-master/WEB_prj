@@ -4,13 +4,12 @@ import logging
 import pymorphy2
 from requests import post
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, session, redirect
+from flask import Flask, render_template, request, session, redirect, g
 from flask_restful import Api
 from data.places import Place
 from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
-from data.db_session import __factory
 from data.films import Film
 from data.images import Image
 from data.associations import Genre
@@ -88,12 +87,11 @@ def timetable(film_id):
         btn_day_active = int([i for i in request.args][0])
     today = datetime.now().date()
     days_data = {'today': today, 'day_delta': timedelta(days=1)}
-    db_sess = db_session.create_session()
-    film = db_sess.query(Film).filter(Film.id == film_id).first()
+    film = g.db.query(Film).filter(Film.id == film_id).first()
     # Узнаем выбранный день, прибавив к текущей дате номер кнопки
     current_date = today + timedelta(days=btn_day_active - 1)
     film_sess = list(filter(lambda f: f.start_time.date() == current_date,
-                            db_sess.query(FilmSession).filter(
+                            g.db.query(FilmSession).filter(
                                 FilmSession.film_id == film.id).all()))
     if request.method == "POST":
         make_order()
@@ -106,14 +104,13 @@ def timetable(film_id):
 
 @app.route('/order/hallplan/<int:session_id>', methods=["GET", 'POST'])
 def hallplan(session_id):
-    db_sess = db_session.create_session()
     # Получение объекта сеанса и фильма для более удобной работы с объектами
-    sess = db_sess.query(FilmSession).filter(
+    sess = g.db.query(FilmSession).filter(
         FilmSession.id == session_id).first()
-    places = sorted(db_sess.query(Place).filter(
+    places = sorted(g.db.query(Place).filter(
         Place.film_session_id == sess.id).all(),
                     key=lambda x: x.id)
-    film = db_sess.query(Film).filter(Film.id == sess.film_id).first()
+    film = g.db.query(Film).filter(Film.id == sess.film_id).first()
     # Установка некоторых кукки
     session['session_id'] = sess.id
     # Создание словаря с параметрами для шаблона
@@ -161,12 +158,19 @@ def get_locale():
     return 'ru'
 
 
-@app.teardown_request
-def shutdown_session(exception=None):
-    if __factory is not None:
-        __factory.session.remove()
-    if exception is not None:
-        print(exception)
+@app.before_request
+def before_request():
+    # print('opening connection')
+    db_sess = db_session.create_session()
+    g.db = db_sess
+
+
+@app.after_request
+def after_request(response):
+    if g.db is not None:
+        # print('closing connection')
+        g.db.close()
+    return response
 
 
 def create_app():

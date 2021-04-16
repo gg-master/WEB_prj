@@ -8,6 +8,8 @@ import sqlalchemy.ext.declarative as dec
 
 import logging
 
+from sqlalchemy.pool import NullPool
+
 SqlAlchemyBase = dec.declarative_base()
 
 __factory = None
@@ -38,7 +40,7 @@ def global_init(db_file):
     # print(f"Подключение к базе данных по адресу {conn_str}")
     logging.info(f"Подключение к базе данных по адресу {conn_str}")
 
-    engine = sa.create_engine(conn_str, echo=False)
+    engine = sa.create_engine(conn_str, echo=False, poolclass=NullPool)
     __factory = orm.sessionmaker(bind=engine)
 
     from . import __all_models

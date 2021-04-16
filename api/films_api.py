@@ -1,10 +1,9 @@
 from datetime import datetime, date
 
 import flask
-from flask import jsonify, request
+from flask import jsonify, request, g
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_
-from data import db_session
 from data.associations import Genre
 from data.films import Film
 
@@ -17,13 +16,12 @@ blueprint = flask.Blueprint(
 
 @blueprint.route('/api/films/recommendations', methods=['GET'])
 def get_films_recommendations():
-    db_sess = db_session.create_session()
     new_films = list(filter(lambda x:
                             x.premiere.month == datetime.now().month
                             and x.premiere.year == datetime.now().year,
-                            db_sess.query(Film).filter(
+                            g.db.query(Film).filter(
                                 Film.premiere != None).all()))[:5]
-    most_watched_films = sorted(db_sess.query(Film).all(),
+    most_watched_films = sorted(g.db.query(Film).all(),
                                 key=lambda x: x.watchers, reverse=True)[:5]
     return jsonify(
         {
@@ -45,15 +43,14 @@ def get_films_recommendations():
 
 @blueprint.route('/api/filter_data', methods=['GET'])
 def get_filter_data():
-    db_sess = db_session.create_session()
-    genres = sorted(set(map(lambda x: x.name, db_sess.query(Genre).all())))
+    genres = sorted(set(map(lambda x: x.name, g.db.query(Genre).all())))
     years = sorted(set(map(lambda x: x.premiere.year,
-                         db_sess.query(Film).filter(
+                           g.db.query(Film).filter(
                              Film.premiere != None).all())))
-    duration = sorted(set(map(lambda x: x.duration, db_sess.query(Film).filter(
+    duration = sorted(set(map(lambda x: x.duration, g.db.query(Film).filter(
         Film.duration != None).all())))
     producer = sorted(set(map(lambda x: x.producer,
-                            db_sess.query(Film).filter(
+                              g.db.query(Film).filter(
                                 Film.producer != None).all())))
     return jsonify(
         {
@@ -69,7 +66,6 @@ def get_filter_data():
 
 @blueprint.route('/api/films/filtered', methods=['GET'])
 def get_filtered_films():
-    db_sess = db_session.create_session()
     filtered_params = {}
     for i in request.form:
         if i == 'title' and request.form.get(i):
@@ -82,7 +78,7 @@ def get_filtered_films():
     if 'title' in filtered_params:
         req.append(Film.title.ilike(f'%{filtered_params["title"]}%'))
     if 'genre' in filtered_params:
-        req.append(Film.genre.contains(db_sess.query(Genre).filter(
+        req.append(Film.genre.contains(g.db.query(Genre).filter(
             Genre.name == filtered_params["genre"]).first()))
     if 'year' in filtered_params:
         st_date = date(int(filtered_params['year']), 1, 1)
@@ -93,7 +89,7 @@ def get_filtered_films():
         req.append(Film.duration == int(filtered_params['duration']))
     if 'producer' in filtered_params:
         req.append(Film.producer.like(filtered_params['producer']))
-    filtered_films = db_sess.query(Film).filter(*req).all()
+    filtered_films = g.db.query(Film).filter(*req).all()
     return jsonify({'films': [film.to_dict(
         only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',
               'duration', 'description', 'poster_url', 'images',
