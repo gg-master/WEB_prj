@@ -1,3 +1,4 @@
+import logging
 import os
 import ssl
 import smtplib
@@ -18,8 +19,13 @@ def send_mail(subject, text: dict):
     path = os.path.join(os.path.dirname(__file__), '.env')
     if os.path.exists(path):
         load_dotenv(path)
-    password = os.environ.get('PASSWORD_EMAIL')
-    sender_email = os.environ.get('EMAIL')
+    try:
+        password = os.environ.get('PASSWORD_EMAIL')
+        sender_email = os.environ.get('EMAIL')
+    except Exception as ex:
+        logging.error(f'Probably not found .env file'
+                      f'\nEXCEPTION: {ex}')
+        return None
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -46,5 +52,9 @@ def send_mail(subject, text: dict):
 
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, subject, msg.as_string())
+        try:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, subject, msg.as_string())
+        except Exception as ex:
+            logging.error(f'Error with sending email'
+                          f'\nEXCEPTION: {ex}')

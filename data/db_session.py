@@ -1,7 +1,12 @@
+import os
+
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
+
+import logging
 
 SqlAlchemyBase = dec.declarative_base()
 
@@ -16,12 +21,22 @@ def global_init(db_file):
 
     if not db_file or not db_file.strip():
         raise Exception("Необходимо указать файл базы данных.")
-    # f'postgresql://postgres:2BoBa1Tolya@127.0.0.1:5432/postgres'
-    conn_str = 'postgresql://wqtbdsqgrcjtet:b2bb363654c525eb36329d2d1f954ad' \
-               'c4de2c6c096d31c10e89adb066a8c67ab@ec2-54-211-176-156.c' \
-               'ompute-1.amazonaws.com:5432/ddf6pvat5g62ok'
+
+    path = os.path.join(os.path.dirname(__package__), '.env')
+    if os.path.exists(path):
+        load_dotenv(path)
+    try:
+        postgresql = os.environ.get('POSTGRESQL')
+        if postgresql is None:
+            raise AttributeError("param postgresql is 'NoneType'")
+    except Exception as ex:
+        logging.error(f'Probably not found .env file'
+                      f'\nEXCEPTION: {ex}')
+        return None
+    conn_str = postgresql
     # conn_str = f'sqlite:///db/database.db?check_same_thread=False'
-    print(f"Подключение к базе данных по адресу {conn_str}")
+    # print(f"Подключение к базе данных по адресу {conn_str}")
+    logging.info(f"Подключение к базе данных по адресу {conn_str}")
 
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)

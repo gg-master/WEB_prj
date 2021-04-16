@@ -1,22 +1,12 @@
-import os
-import time
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
-import pprint
-import logging
-import random
-import string
-import pymorphy2
-import threading
-from datetime import datetime, timedelta
-from requests import get, put, post, delete
 from flask_ngrok import run_with_ngrok
-from wtforms.validators import DataRequired
+import os
+import logging
+import pymorphy2
+from requests import post
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, session, redirect
 from flask_restful import Api
 from data.places import Place
-from api.film_session_resource import FilmSessionResource
-from api.films_resource import FilmResource
 from forms.film import FilmForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
@@ -26,18 +16,17 @@ from data.images import Image
 from data.associations import Genre
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from sqlalchemy.orm import Session
-from data.db_session import SqlAlchemyBase
+from flask_admin.contrib.fileadmin import FileAdmin
 from data.film_sessions import FilmSession
 from flask_babelex import Babel
 from babel.dates import format_datetime
-from flask_admin.contrib.fileadmin import FileAdmin
-from flask import Markup
 
-from modules import send_email
+from modules.admin_views import FilmSessionView, PlaceView, FilmView
+from modules.make_order import make_order
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
+
 app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
@@ -165,123 +154,11 @@ def create_schedule():
     return redirect('/admin/filmsession/')
 
 
-def make_order():
-    db_sess = db_session.create_session()
-    # Получение сеанса фильма
-    film_session = FilmSessionResource().get(
-        session.get('session_id')).json['film_sess']
-    # Получение фильма
-    film = FilmResource().get(film_session['film_id']).json['film']
-    # Узнаем выбранные места из запроса
-    places = [i for i in request.form if request.form.get(i) == 'label']
-    # Получение всех мест для сессии
-    list_places_in_db = db_sess.query(Place).filter(
-        Place.film_session_id == film_session['id']).all()
-    places_dct = {}
-    # Перебираем все выбранные места и измением статус места
-    for i in places:
-        row, col = list(map(int, i.split('-')))
-        place = list(filter(lambda place_db:
-                            place_db.row_id == row and place_db.seat_id == col,
-                            list_places_in_db))[0]
-        place.status = True
-        places_dct[i] = place.code
-    # Коммитим изменения
-    db_sess.commit()
-    params = {
-        'places': places_dct,
-        'film_title': film['title'],
-        'hall_id': film_session['hall_id'],
-        'time_start': film_session['start_time'],
-        'time_end': film_session['end_time'],
-        'phone': '+7 (8442) 93-52-52',
-        'msg-text': 'Ваши билеты, заказанные на сайте FilmCenter.'
-                    '\nНа это письмо не нужно отвечать.'
-    }
-    send_thread = threading.Thread(
-        target=send_email.send_mail,
-        args=(request.form.get('email'), params,))
-    send_thread.start()
-
-
-class FilmView(ModelView):
-    can_view_details = True
-    column_searchable_list = ['title', 'rating', 'actors', 'producer',
-                              'premiere', 'duration', 'description']
-    column_filters = ['title', 'rating', 'premiere', 'duration']
-    form_excluded_columns = ['film_session']
-    inline_models = [(Image, dict(form_columns=['id', 'image_url']))]
-
-    def _description_formatter(view, context, model, name):
-        if model.description is None:
-            return ''
-        return model.description[:20]
-
-    def _actors_formatter(view, context, model, name):
-        if model.actors is None:
-            return ''
-        return model.actors.split(', ')[0]
-
-    def _poster_url_formatter(view, context, model, name):
-        if model.poster_url:
-            markupstring = f"<a href='{model.poster_url}'>link</a>"
-            return Markup(markupstring)
-        else:
-            return ""
-
-    def _trailer_url_formatter(view, context, model, name):
-        if model.trailer_url:
-            markupstring = f"<a href='{model.trailer_url}'>link</a>"
-            return Markup(markupstring)
-        else:
-            return ""
-
-    column_formatters = {
-        'actors': _actors_formatter,
-        'description': _description_formatter,
-        'poster_url': _poster_url_formatter,
-        'trailer_url': _trailer_url_formatter
-    }
-
-
-class FilmSessionView(ModelView):
-    can_view_details = True
-    column_searchable_list = ['film_id', 'hall_id', 'start_time', 'end_time',
-                              'price']
-    column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
-    list_template = 'film_session.html'
-    form_excluded_columns = ['places']
-
-    def after_model_change(self, form, model, is_created):
-        db_sess = db_session.create_session()
-        symbols = list(string.ascii_uppercase + string.digits)
-        for i in range(1, 7):
-            for j in range(1, 21):
-                place = Place(
-                    film_session_id=model.id,
-                    row_id=i,
-                    seat_id=j,
-                    status=False,
-                    code=''.join(random.sample(symbols, 6))
-                )
-                db_sess.add(place)
-                db_sess.commit()
-
-
-def delete_film_session_every_week():
-    db_sess = db_session.create_session()
-    current_time_minus_week = datetime.now() - timedelta(weeks=1)
-    db_sess.query(FilmSession).filter(FilmSession.end_time <
-                                      current_time_minus_week).delete()
-    db_sess.commit()
-
-
-class PlaceView(ModelView):
-    can_view_details = True
-    column_searchable_list = ['film_session_id', 'row_id', 'seat_id',
-                              'status']
-    column_filters = ['film_session_id', 'row_id', 'seat_id', 'status']
-    page_size = 20
+@babel.localeselector
+def get_locale():
+    # Put your logic here. Application can store locale in
+    # user profile, cookie, session, etc.
+    return 'ru'
 
 
 @app.teardown_request
@@ -293,7 +170,6 @@ def shutdown_session(exception=None):
 
 
 def create_app():
-    logging.info('Connected to database and created needed recourse')
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
     admin = Admin(app)
@@ -312,22 +188,12 @@ def create_app():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-
-    scheduler = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
-    scheduler.add_job(func=delete_film_session_every_week,
-                      trigger="interval", hours=24)
-    scheduler.start()
+    db_sess.close()
     return app
 
 
-@babel.localeselector
-def get_locale():
-    # Put your logic here. Application can store locale in
-    # user profile, cookie, session, etc.
-    return 'ru'
-
-
 if __name__ == '__main__':
+    import clock
     create_app()
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
