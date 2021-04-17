@@ -4,7 +4,6 @@ from flask import request, session, g
 
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
-from data import db_session
 from data.places import Place
 from modules import send_email
 
