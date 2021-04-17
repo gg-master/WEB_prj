@@ -7,17 +7,23 @@ from datetime import datetime, timedelta
 
 def abort_if_film_not_found(film_id):
     session = db_session.create_session()
+    # Узнаем есть ли фильм
     films = session.query(Film).get(film_id)
+    # Если нету, то выбрасываем ошибку 404
     if not films:
         abort(404, message=f"Film {film_id} not found")
+    # Закрываем сессию с бд
     session.close()
 
 
 def abort_if_film_sess_not_found(film_sess_id):
     session = db_session.create_session()
+    # Узнаем есть ли сессия
     films = session.query(FilmSession).get(film_sess_id)
+    # Если нету, то выбрасываем ошибку 404
     if not films:
         abort(404, message=f"Film session {film_sess_id} not found")
+    # Закрываем сессию с бд
     session.close()
 
 

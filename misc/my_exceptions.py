@@ -1,0 +1,2 @@
+class DatabaseNoneTypeError(Exception):
+    pass

@@ -161,8 +161,7 @@ def get_locale():
 @app.before_request
 def before_request():
     # print('opening connection')
-    db_sess = db_session.create_session()
-    g.db = db_sess
+    g.db = db_session.create_session()
 
 
 @app.after_request

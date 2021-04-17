@@ -25,10 +25,14 @@ parser.add_argument('genres', action='append', default=[])
 
 class FilmResource(Resource):
     def get(self, film_id):
+        # Проверка наличия фильма
         abort_if_film_not_found(film_id)
+        # Получение фильма
         film = g.db.query(Film).get(film_id)
+        # Увеличение количества просмотров
         film.watchers += 1
         g.db.commit()
+        # Возвращаение словаря с выбранным фильмом
         return jsonify({'film': film.to_dict(
             only=(
                 'id', 'title', 'rating', 'actors', 'producer', 'premiere',
@@ -36,8 +40,11 @@ class FilmResource(Resource):
                 'trailer_url', 'watchers', 'genre'))})
 
     def delete(self, film_id):
+        # Проверка наличия фильма
         abort_if_film_not_found(film_id)
+        # Получение фильма
         film = g.db.query(Film).get(film_id)
+        # Удаление фильма
         g.db.delete(film)
         g.db.commit()
         return jsonify({'success': 'OK'})

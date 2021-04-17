@@ -5,10 +5,13 @@ from flask import request, session, g
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
 from data.places import Place
+from misc.my_exceptions import DatabaseNoneTypeError
 from modules import send_email
 
 
 def make_order():
+    if g.db is None:
+        raise DatabaseNoneTypeError("Can`t create order because g.db is None")
     # Получение сеанса фильма
     film_session = FilmSessionResource().get(
         session.get('session_id')).json['film_sess']

@@ -16,13 +16,16 @@ blueprint = flask.Blueprint(
 
 @blueprint.route('/api/films/recommendations', methods=['GET'])
 def get_films_recommendations():
+    # Получение фильмов, премьера которых была за последний месяц
     new_films = list(filter(lambda x:
                             x.premiere.month == datetime.now().month
                             and x.premiere.year == datetime.now().year,
                             g.db.query(Film).filter(
                                 Film.premiere != None).all()))[:5]
+    # Получем первые 5 самых просматриваемых фильмов
     most_watched_films = sorted(g.db.query(Film).all(),
                                 key=lambda x: x.watchers, reverse=True)[:5]
+    # Возвращаем словарь с найденными фильмами
     return jsonify(
         {
             'new_films': [
@@ -43,15 +46,19 @@ def get_films_recommendations():
 
 @blueprint.route('/api/filter_data', methods=['GET'])
 def get_filter_data():
+    # Получение всех доступных жанров
     genres = sorted(set(map(lambda x: x.name, g.db.query(Genre).all())))
+    # Получение всех доступных годов премьеры
     years = sorted(set(map(lambda x: x.premiere.year,
                            g.db.query(Film).filter(
-                             Film.premiere != None).all())))
+                               Film.premiere != None).all())))
+    # Получение всех доступных вариантов длительности фильмов
     duration = sorted(set(map(lambda x: x.duration, g.db.query(Film).filter(
         Film.duration != None).all())))
+    # Получение всех доступных режиссёров
     producer = sorted(set(map(lambda x: x.producer,
                               g.db.query(Film).filter(
-                                Film.producer != None).all())))
+                                  Film.producer != None).all())))
     return jsonify(
         {
             'filter_data': {
@@ -66,6 +73,8 @@ def get_filter_data():
 
 @blueprint.route('/api/films/filtered', methods=['GET'])
 def get_filtered_films():
+    # Перебираем указанные параметры в форме и составляем
+    # словарь параметров, по которым требуется найти фильм
     filtered_params = {}
     for i in request.form:
         if i == 'title' and request.form.get(i):
@@ -74,6 +83,7 @@ def get_filtered_films():
             v = request.form.get(i.split('_')[0])
             if v != '#':
                 filtered_params[i.split('_')[0]] = v
+    # Составляем запрос для бд, перебирая параметры
     req = []
     if 'title' in filtered_params:
         req.append(Film.title.ilike(f'%{filtered_params["title"]}%'))
@@ -89,6 +99,7 @@ def get_filtered_films():
         req.append(Film.duration == int(filtered_params['duration']))
     if 'producer' in filtered_params:
         req.append(Film.producer.like(filtered_params['producer']))
+    # Получаем все фильмы, которые подходят по запросу
     filtered_films = g.db.query(Film).filter(*req).all()
     return jsonify({'films': [film.to_dict(
         only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',

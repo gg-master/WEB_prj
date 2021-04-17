@@ -19,6 +19,7 @@ def send_mail(subject, text: dict):
     path = os.path.join(os.path.dirname(__file__), '.env')
     if os.path.exists(path):
         load_dotenv(path)
+    # Загружаем данные пароля и почты
     try:
         password = os.environ.get('PASSWORD_EMAIL')
         sender_email = os.environ.get('EMAIL')
@@ -26,7 +27,7 @@ def send_mail(subject, text: dict):
         logging.error(f'Probably not found .env file'
                       f'\nEXCEPTION: {ex}')
         return None
-
+    # Формируем данные письма
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = subject
