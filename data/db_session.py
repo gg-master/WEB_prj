@@ -39,8 +39,7 @@ def global_init(db_file):
     # conn_str = f'sqlite:///db/database.db?check_same_thread=False'
     # print(f"Подключение к базе данных по адресу {conn_str}")
     logging.info(f"Подключение к базе данных по адресу {conn_str}")
-    # poolclass = NullPool
-    engine = sa.create_engine(conn_str, echo=False)
+    engine = sa.create_engine(conn_str, echo=False, poolclass=NullPool)
     __factory = orm.sessionmaker(bind=engine)
 
     from . import __all_models
