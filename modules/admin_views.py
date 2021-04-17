@@ -2,9 +2,8 @@ import random
 import string
 
 from flask_admin.contrib.sqla import ModelView
-from flask import Markup
+from flask import Markup, g
 
-from data import db_session
 from data.images import Image
 from data.places import Place
 
@@ -58,7 +57,6 @@ class FilmSessionView(ModelView):
     form_excluded_columns = ['places']
 
     def after_model_change(self, form, model, is_created):
-        db_sess = db_session.create_session()
         symbols = list(string.ascii_uppercase + string.digits)
         for i in range(1, 7):
             for j in range(1, 21):
@@ -69,8 +67,8 @@ class FilmSessionView(ModelView):
                     status=False,
                     code=''.join(random.sample(symbols, 6))
                 )
-                db_sess.add(place)
-                db_sess.commit()
+                g.db.add(place)
+                g.db.commit()
 
 
 class PlaceView(ModelView):

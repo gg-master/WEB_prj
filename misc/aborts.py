@@ -1,5 +1,4 @@
 from flask_restful import abort
-
 from data import db_session
 from data.films import Film
 from data.film_sessions import FilmSession
@@ -8,16 +7,24 @@ from datetime import datetime, timedelta
 
 def abort_if_film_not_found(film_id):
     session = db_session.create_session()
+    # Узнаем есть ли фильм
     films = session.query(Film).get(film_id)
+    # Если нету, то выбрасываем ошибку 404
     if not films:
         abort(404, message=f"Film {film_id} not found")
+    # Закрываем сессию с бд
+    session.close()
 
 
 def abort_if_film_sess_not_found(film_sess_id):
     session = db_session.create_session()
+    # Узнаем есть ли сессия
     films = session.query(FilmSession).get(film_sess_id)
+    # Если нету, то выбрасываем ошибку 404
     if not films:
         abort(404, message=f"Film session {film_sess_id} not found")
+    # Закрываем сессию с бд
+    session.close()
 
 
 def abort_if_film_sess_not_correct(data):
@@ -30,6 +37,7 @@ def abort_if_film_sess_not_correct(data):
         end_time = data['end_time']
     except (ValueError, TypeError):
         abort(400, message=f'Time is not correct')
+        return None
     duration = timedelta(minutes=film.duration)
     if duration > end_time - start_time:
         abort(400, message=f'The time interval is less'
@@ -45,3 +53,4 @@ def abort_if_film_sess_not_correct(data):
             i < len(timetable) and end_time <= timetable[i][0] or
             i >= len(timetable) or not i):
         abort(400, message='This time is not available')
+    session.close()

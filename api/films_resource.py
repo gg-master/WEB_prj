@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from flask import jsonify
+from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
-from data import db_session
 from data.associations import Genre
 from data.films import Film
 from data.images import Image
@@ -26,11 +25,14 @@ parser.add_argument('genres', action='append', default=[])
 
 class FilmResource(Resource):
     def get(self, film_id):
+        # Проверка наличия фильма
         abort_if_film_not_found(film_id)
-        session = db_session.create_session()
-        film = session.query(Film).get(film_id)
+        # Получение фильма
+        film = g.db.query(Film).get(film_id)
+        # Увеличение количества просмотров
         film.watchers += 1
-        session.commit()
+        g.db.commit()
+        # Возвращаение словаря с выбранным фильмом
         return jsonify({'film': film.to_dict(
             only=(
                 'id', 'title', 'rating', 'actors', 'producer', 'premiere',
@@ -38,18 +40,19 @@ class FilmResource(Resource):
                 'trailer_url', 'watchers', 'genre'))})
 
     def delete(self, film_id):
+        # Проверка наличия фильма
         abort_if_film_not_found(film_id)
-        session = db_session.create_session()
-        film = session.query(Film).get(film_id)
-        session.delete(film)
-        session.commit()
+        # Получение фильма
+        film = g.db.query(Film).get(film_id)
+        # Удаление фильма
+        g.db.delete(film)
+        g.db.commit()
         return jsonify({'success': 'OK'})
 
     def put(self, film_id):
         abort_if_film_not_found(film_id)
         args = parser.parse_args()
-        session = db_session.create_session()
-        film = session.query(Film).get(film_id)
+        film = g.db.query(Film).get(film_id)
         film.title = args['title']
         film.rating = args['rating']
         film.actors = args['actors']
@@ -63,27 +66,26 @@ class FilmResource(Resource):
             film.premiere = datetime.fromisoformat(args['premiere'])
         genres = list(map(lambda x: x.lower(), args['genres']))
         for genre_name in genres:
-            genre = session.query(Genre).filter(
+            genre = g.db.query(Genre).filter(
                 Genre.name == genre_name).first()
             if genre is None:
                 genre = Genre()
                 genre.name = genre_name
             film.genre.append(genre)
         for image_url in args['images']:
-            image = session.query(Image).filter(
+            image = g.db.query(Image).filter(
                 Image.image_url == image_url).first()
             if image is None:
                 image = Image()
                 image.image_url = image_url
             film.images.append(image)
-        session.commit()
+        g.db.commit()
         return jsonify({'success': 'OK'})
 
 
 class FilmListResource(Resource):
     def get(self):
-        session = db_session.create_session()
-        films = session.query(Film).all()
+        films = g.db.query(Film).all()
         return jsonify({'films': [film.to_dict(
             only=('id', 'title', 'rating', 'actors', 'producer', 'premiere',
                   'duration', 'description', 'poster_url', 'images',
@@ -91,7 +93,6 @@ class FilmListResource(Resource):
 
     def post(self):
         args = parser.parse_args()
-        session = db_session.create_session()
 
         film = Film(
             title=args['title'],
@@ -108,19 +109,19 @@ class FilmListResource(Resource):
             film.premiere = datetime.fromisoformat(args['premiere'])
         genres = list(map(lambda x: x.lower(), args['genres']))
         for genre_name in genres:
-            genre = session.query(Genre).filter(
+            genre = g.db.query(Genre).filter(
                 Genre.name == genre_name).first()
             if genre is None:
                 genre = Genre()
                 genre.name = genre_name
             film.genre.append(genre)
         for image_url in args['images']:
-            image = session.query(Image).filter(
+            image = g.db.query(Image).filter(
                 Image.image_url == image_url).first()
             if image is None:
                 image = Image()
                 image.image_url = image_url
             film.images.append(image)
-        session.add(film)
-        session.commit()
+        g.db.add(film)
+        g.db.commit()
         return jsonify({'success': 'OK'})

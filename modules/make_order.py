@@ -1,16 +1,17 @@
 import threading
 
-from flask import request, session
+from flask import request, session, g
 
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
-from data import db_session
 from data.places import Place
+from misc.my_exceptions import DatabaseNoneTypeError
 from modules import send_email
 
 
 def make_order():
-    db_sess = db_session.create_session()
+    if g.db is None:
+        raise DatabaseNoneTypeError("Can`t create order because g.db is None")
     # Получение сеанса фильма
     film_session = FilmSessionResource().get(
         session.get('session_id')).json['film_sess']
@@ -19,7 +20,7 @@ def make_order():
     # Узнаем выбранные места из запроса
     places = [i for i in request.form if request.form.get(i) == 'label']
     # Получение всех мест для сессии
-    list_places_in_db = db_sess.query(Place).filter(
+    list_places_in_db = g.db.query(Place).filter(
         Place.film_session_id == film_session['id']).all()
     places_dct = {}
     # Перебираем все выбранные места и измением статус места
@@ -31,7 +32,7 @@ def make_order():
         place.status = True
         places_dct[i] = place.code
     # Коммитим изменения
-    db_sess.commit()
+    g.db.commit()
     params = {
         'places': places_dct,
         'film_title': film['title'],
