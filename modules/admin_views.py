@@ -4,6 +4,7 @@ import string
 from flask_admin.contrib.sqla import ModelView
 from flask import Markup, g
 
+from data import db_session
 from data.images import Image
 from data.places import Place
 
@@ -58,17 +59,18 @@ class FilmSessionView(ModelView):
 
     def after_model_change(self, form, model, is_created):
         symbols = list(string.ascii_uppercase + string.digits)
-        for i in range(1, 7):
-            for j in range(1, 21):
-                place = Place(
-                    film_session_id=model.id,
-                    row_id=i,
-                    seat_id=j,
-                    status=False,
-                    code=''.join(random.sample(symbols, 6))
-                )
-                g.db.add(place)
-                g.db.commit()
+        with db_session.create_session() as db_sess:
+            for i in range(1, 7):
+                for j in range(1, 21):
+                    place = Place(
+                        film_session_id=model.id,
+                        row_id=i,
+                        seat_id=j,
+                        status=False,
+                        code=''.join(random.sample(symbols, 6))
+                    )
+                    db_sess.add(place)
+                    db_sess.commit()
 
 
 class PlaceView(ModelView):
