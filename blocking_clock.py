@@ -13,7 +13,8 @@ logging.basicConfig(level=logging.INFO,
 
 
 @sched.scheduled_job('interval', hours=24)
-def clear_session_table():
+def clear_session_table_blocking():
+    logging.info('Log before connect to database')
     if db_session.__factory is None:
         db_session.global_init('connect_to_db_in_db_session_file')
     delete_film_session_every_week()

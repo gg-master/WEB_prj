@@ -6,7 +6,7 @@ sched = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
 
 
 @sched.scheduled_job('interval', hours=24)
-def clear_session_table():
+def clear_session_table_background():
     delete_film_session_every_week()
 
 
