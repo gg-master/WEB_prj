@@ -140,4 +140,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.ini
+*.ini
+alembic/
