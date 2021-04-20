@@ -56,7 +56,6 @@ class FilmSessionView(ModelView):
     column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
     list_template = 'film_session.html'
     form_excluded_columns = ['places']
-    page_size = 20
 
 
     def _s_places_formatter(view, context, model, name):
