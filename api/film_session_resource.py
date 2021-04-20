@@ -30,9 +30,9 @@ class FilmSessionResource(Resource):
         g.db.commit()
         return jsonify({'success': 'OK'})
 
-    def put(self, film_sess_id):
+    def put(self, film_sess_id, args=None):
         abort_if_film_sess_not_found(film_sess_id)
-        args = parser.parse_args()
+        args = parser.parse_args() if args is None else args
         film_sess = g.db.query(FilmSession).get(film_sess_id)
         film_sess.film_id = args['film_id']
         film_sess.hall_id = args['hall_id']

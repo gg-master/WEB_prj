@@ -20,16 +20,13 @@ def make_order():
     # Получение всех мест для сессии
     places_dct, list_places_in_db = create_places(
         places, list(film_session['s_places']), film_session['id'])
-    db_threading = threading.Thread(
-        target=requests.put,
-        args=(f'http://localhost:5000/api/film_sessions/{film_session["id"]}',
-              {'film_id': film_session["film_id"],
-               'hall_id': film_session['hall_id'],
-               'start_time': film_session['start_time'],
-               'end_time': film_session['end_time'],
-               's_places': ''.join(list_places_in_db),
-               'price': film_session['price']}))
-    db_threading.start()
+    FilmSessionResource().put(film_session['id'], args={
+            'film_id': film_session["film_id"],
+            'hall_id': film_session['hall_id'],
+            'start_time': film_session['start_time'],
+            'end_time': film_session['end_time'],
+            's_places': ''.join(list_places_in_db),
+            'price': film_session['price']})
     params = {
         'places': places_dct,
         'film_title': film['title'],
