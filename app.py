@@ -192,12 +192,21 @@ def continue_schedule():
     while g.db.query(FilmSession).filter(FilmSession.start_time >=
                                          current_day).first():
         current_day += day
+    f = False
     for i in g.db.query(FilmSession).all():
+        if not f:
+            delta = current_day - i.start_time
+            delta = timedelta(days=delta.days + 1)
+            # print('delta:  ', delta)
+            f = True
         fs = FilmSession()
         fs.film_id = i.film_id
         fs.hall_id = i.hall_id
-        fs.start_time = i.start_time.replace(day=current_day.day)
-        fs.end_time = i.end_time.replace(day=current_day.day)
+        # print('cr:  ', current_day)
+        fs.start_time = i.start_time + delta
+        # print('i: ', i.start_time)
+        # print('fs: ', fs.start_time)
+        fs.end_time = i.end_time + delta
         fs.price = i.price
         g.db.add(fs)
     g.db.commit()
