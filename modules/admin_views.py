@@ -60,7 +60,6 @@ class FilmSessionView(ModelView):
     form_excluded_columns = ['places']
     page_size = 213
 
-
     def _s_places_formatter(view, context, model, name):
         if len(model.s_places) > 10:
             return model.s_places[:10]

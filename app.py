@@ -163,7 +163,7 @@ def create_schedule():
                     continue
                 # print(film_id)
                 # print(film.duration)
-                hours, minutes = divmod(math.ceil(film.duration/30)*30, 60)
+                hours, minutes = divmod(math.ceil(film.duration / 30) * 30, 60)
                 sess_duration = timedelta(hours=hours, minutes=minutes)
                 fs = FilmSession()
                 fs.film_id = film.id
@@ -256,6 +256,7 @@ def create_app():
 
 if __name__ == '__main__':
     import background_clock
+
     create_app()
     # port = int(os.environ.get("PORT", 5000))
     # app.run(host='0.0.0.0', port=port)
