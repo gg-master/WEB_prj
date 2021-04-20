@@ -175,14 +175,32 @@ def create_schedule():
                 fs.end_time = current_day + current_time + sess_duration
                 fs.price = 250
                 g.db.add(fs)
-                g.db.commit()
                 # print('Current time before:  ', current_time)
                 current_time += sess_duration
                 # print('Current time after:  ', current_time)
             current_time = timedelta(hours=10, minutes=0)
         current_day.replace(hour=0, minute=0)
         current_day += timedelta(days=1)
+        g.db.commit()
+    return redirect('/admin/filmsession/')
 
+
+@app.route('/continue_schedule', methods=['POST'])
+def continue_schedule():
+    current_day = datetime.combine(date.today(), datetime.min.time())
+    day = timedelta(days=1)
+    while g.db.query(FilmSession).filter(FilmSession.start_time >=
+                                         current_day).first():
+        current_day += day
+    for i in g.db.query(FilmSession).all():
+        fs = FilmSession()
+        fs.film_id = i.film_id
+        fs.hall_id = i.hall_id
+        fs.start_time = i.start_time.replace(day=current_day.day)
+        fs.end_time = i.end_time.replace(day=current_day.day)
+        fs.price = i.price
+        g.db.add(fs)
+    g.db.commit()
     return redirect('/admin/filmsession/')
 
 
