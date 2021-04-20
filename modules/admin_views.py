@@ -59,18 +59,17 @@ class FilmSessionView(ModelView):
 
     def after_model_change(self, form, model, is_created):
         symbols = list(string.ascii_uppercase + string.digits)
-        with db_session.create_session() as db_sess:
-            for i in range(1, 7):
-                for j in range(1, 21):
-                    place = Place(
-                        film_session_id=model.id,
-                        row_id=i,
-                        seat_id=j,
-                        status=False,
-                        code=''.join(random.sample(symbols, 6))
-                    )
-                    db_sess.add(place)
-                    db_sess.commit()
+        for i in range(1, 7):
+            for j in range(1, 21):
+                place = Place(
+                    film_session_id=model.id,
+                    row_id=i,
+                    seat_id=j,
+                    status=False,
+                    code=''.join(random.sample(symbols, 6))
+                )
+                g.db.add(place)
+                g.db.commit()
 
 
 class PlaceView(ModelView):
