@@ -1,11 +1,14 @@
 import logging
+import requests
 
-from data import db_session
-from api import films_api
-
-if db_session.__factory is None:
-    db_session.global_init('connect_to_db_in_db_session_file')
+logging.basicConfig(level=logging.INFO)
 
 
 def test_films_api():
-    assert films_api.get_films_recommendations() == ''
+    arr = ['new_films', 'most_watched_films']
+    resp = requests.get(
+        'http://localhost:5000/api/films/recommendations').json()
+    assert all(map(lambda x: x in resp, arr))
+
+
+test_films_api()
