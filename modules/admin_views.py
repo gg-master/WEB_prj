@@ -11,6 +11,8 @@ from data.places import Place
 
 class FilmView(ModelView):
     can_view_details = True
+    # form_columns = ['id', 'title', 'rating', 'actors', 'producer',
+    #                           'premiere', 'duration', 'description']
     column_searchable_list = ['title', 'rating', 'actors', 'producer',
                               'premiere', 'duration', 'description']
     column_filters = ['title', 'rating', 'premiere', 'duration']

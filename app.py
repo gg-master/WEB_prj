@@ -154,25 +154,31 @@ def create_schedule():
                                          current_day).first():
         current_day += day
     for day in range(7):
-        while current_time <= timedelta(hours=22):
-            film = g.db.query(Film).filter(Film.id ==
-                                           random.randrange(20)).first()
-            hours, minutes = divmod(math.ceil(timedelta(
-                minutes=film.duration)/30)*30, 60)
-            sess_duration = (film.duration + timedelta(
-                hours=hours)).replace(minute=minutes)
-            fs = FilmSession()
-            fs.film_id = film.id
-            fs.hall_id = 1
-            fs.start_time = current_day + current_time
-            fs.end_time = current_day + current_time + sess_duration
-            fs.price = 250
-            g.db.add(fs)
-            g.db.commit()
-            current_time += sess_duration
-            current_day.replace(hour=0, minute=0)
-            current_day += timedelta(days=1)
-            current_time = timedelta(hours=10)
+        for hall in range(1, 5):
+            while current_time < timedelta(hours=22):
+                film_id = random.randrange(1, 24)
+                film = g.db.query(Film).filter(Film.id ==
+                                               film_id).first()
+                if not film:
+                    continue
+                # print(film_id)
+                # print(film.duration)
+                hours, minutes = divmod(math.ceil(film.duration/30)*30, 60)
+                sess_duration = timedelta(hours=hours, minutes=minutes)
+                fs = FilmSession()
+                fs.film_id = film.id
+                fs.hall_id = hall
+                fs.start_time = current_day + current_time
+                fs.end_time = current_day + current_time + sess_duration
+                fs.price = 250
+                g.db.add(fs)
+                g.db.commit()
+                # print('Current time before:  ', current_time)
+                current_time += sess_duration
+                # print('Current time after:  ', current_time)
+            current_time = timedelta(hours=10, minutes=0)
+        current_day.replace(hour=0, minute=0)
+        current_day += timedelta(days=1)
 
     return redirect('/admin/filmsession/')
 
