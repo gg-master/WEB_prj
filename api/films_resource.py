@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
 
-from data import db_session
 from data.associations import Genre
 from data.films import Film
 from data.images import Image
