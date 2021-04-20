@@ -5,7 +5,7 @@ from flask import request, session, g
 
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
-from data.places import Place
+from data.places import Place, generate_code
 from modules import send_email
 
 
@@ -58,8 +58,9 @@ def create_places(places, list_places_in_db, f_s_id):
             row_id=row,
             seat_id=col
         )
-        g.db.add(place)
+        place.code = generate_code()
         places_dct[i] = place.code
+        g.db.add(place)
     # Коммитим изменения
     g.db.commit()
     return places_dct, list_places_in_db
