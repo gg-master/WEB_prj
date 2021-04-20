@@ -173,18 +173,6 @@ def create_schedule():
             g.db.add(fs)
             g.db.commit()
             current_time += sess_duration
-            symbols = list(string.ascii_uppercase + string.digits)
-            for i in range(1, 7):
-                for j in range(1, 21):
-                    place = Place(
-                        film_session_id=fs.id,
-                        row_id=i,
-                        seat_id=j,
-                        status=False,
-                        code=''.join(random.sample(symbols, 6))
-                    )
-                    g.db.add(place)
-                    g.db.commit()
             current_day.replace(hour=0, minute=0)
             current_day += timedelta(days=1)
             current_time = timedelta(hours=10)

@@ -4,6 +4,12 @@ from sqlalchemy_serializer import SerializerMixin
 import random
 from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
+import string
+
+
+def generate_code():
+    symbols = list(string.ascii_uppercase + string.digits)
+    return ''.join(random.sample(symbols, 6))
 
 
 class Place(SqlAlchemyBase, SerializerMixin):
@@ -19,7 +25,7 @@ class Place(SqlAlchemyBase, SerializerMixin):
     seat_id = sqlalchemy.Column(sqlalchemy.Integer)
     # status = sqlalchemy.Column(sqlalchemy.Boolean)
     code = sqlalchemy.Column(sqlalchemy.String,
-                             default=''.join(random.sample(symbols, 6)))
+                             default=generate_code)
     film_session = orm.relation('FilmSession')
 
     def __repr__(self):
