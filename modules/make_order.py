@@ -1,10 +1,11 @@
 import threading
 
+import requests
 from flask import request, session, g
 
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
-from data.places import Place
+from data.places import Place, generate_code
 from modules import send_email
 
 
@@ -17,19 +18,15 @@ def make_order():
     # Узнаем выбранные места из запроса
     places = [i for i in request.form if request.form.get(i) == 'label']
     # Получение всех мест для сессии
-    list_places_in_db = g.db.query(Place).filter(
-        Place.film_session_id == film_session['id']).all()
-    places_dct = {}
-    # Перебираем все выбранные места и измением статус места
-    for i in places:
-        row, col = list(map(int, i.split('-')))
-        place = list(filter(lambda place_db:
-                            place_db.row_id == row and
-                            place_db.seat_id == col, list_places_in_db))[0]
-        place.status = True
-        places_dct[i] = place.code
-    # Коммитим изменения
-    g.db.commit()
+    places_dct, list_places_in_db = create_places(
+        places, list(film_session['s_places']), film_session['id'])
+    FilmSessionResource().put(film_session['id'], args={
+            'film_id': film_session["film_id"],
+            'hall_id': film_session['hall_id'],
+            'start_time': film_session['start_time'],
+            'end_time': film_session['end_time'],
+            's_places': ''.join(list_places_in_db),
+            'price': film_session['price']})
     params = {
         'places': places_dct,
         'film_title': film['title'],
@@ -44,3 +41,23 @@ def make_order():
         target=send_email.send_mail,
         args=(request.form.get('email'), params,))
     send_thread.start()
+
+
+def create_places(places, list_places_in_db, f_s_id):
+    places_dct = {}
+    # Перебираем все выбранные места и измением статус места
+    for i in places:
+        row, col = list(map(int, i.split('-')))
+        number_place = ((int(row) - 1) * 20) + (int(col) - 1)
+        list_places_in_db[number_place] = '1'
+        place = Place(
+            film_session_id=f_s_id,
+            row_id=row,
+            seat_id=col
+        )
+        place.code = generate_code()
+        places_dct[i] = place.code
+        g.db.add(place)
+    # Коммитим изменения
+    g.db.commit()
+    return places_dct, list_places_in_db

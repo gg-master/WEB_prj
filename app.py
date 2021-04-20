@@ -89,11 +89,11 @@ def timetable(film_id):
     btn_day_active = 1
     if request.args:
         btn_day_active = int([i for i in request.args][0])
-    today = datetime.now().date()
+    today = datetime.now()
     days_data = {'today': today, 'day_delta': timedelta(days=1)}
     film = g.db.query(Film).filter(Film.id == film_id).first()
     # Узнаем выбранный день, прибавив к текущей дате номер кнопки
-    current_date = today + timedelta(days=btn_day_active - 1)
+    current_date = today.date() + timedelta(days=btn_day_active - 1)
     film_sess = list(filter(lambda f: f.start_time.date() == current_date,
                             g.db.query(FilmSession).filter(
                                 FilmSession.film_id == film.id).all()))
@@ -111,14 +111,11 @@ def hallplan(session_id):
     # Получение объекта сеанса и фильма для более удобной работы с объектами
     sess = g.db.query(FilmSession).filter(
         FilmSession.id == session_id).first()
-    places = sorted(g.db.query(Place).filter(
-        Place.film_session_id == sess.id).all(),
-                    key=lambda x: x.id)
     film = g.db.query(Film).filter(Film.id == sess.film_id).first()
     # Установка некоторых кукки
     session['session_id'] = sess.id
     # Создание словаря с параметрами для шаблона
-    params = {'session': sess, 'film': film, 'places': places,
+    params = {'session': sess, 'film': film, 'places': sess.s_places,
               'locate': format_datetime}
     if request.method == 'POST' and request.form:
         # Узнаем какие номера билетов имеются

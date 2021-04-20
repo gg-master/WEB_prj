@@ -45,6 +45,20 @@
         border: #797A7C 1px solid;
         border-radius: .25rem;
     }
+
+    .text-disabled {
+        color: #6e6f6f !important;
+    }
+
+    .session-disabled a {
+        pointer-events: none;
+        cursor: default;
+        padding: .4rem 1rem;
+        border-radius: .25rem;
+        border: #6e6f6f 1px solid;
+        color: #6e6f6f !important;
+    }
+
 </style>
 <div class="container-fluid"
      style="border-bottom: 1px solid; border-bottom-color: #8E8E8E;">
@@ -92,7 +106,7 @@
         <div class="d-flex flex-column text_param pl-4">
             <div>
                 <div class="d-flex">
-                    {% set day = namespace(date=today['today'])%}
+                    {% set day = namespace(date=today['today'].date()) %}
                     {% for i in range(6) %}
                     {% if not loop.first %}
                     {% set day.date = day.date + today['day_delta'] %}
@@ -107,7 +121,7 @@
                                 name="{{loop.index}}" value="{{day.date}}">
                             {% endif %}
                             {% if loop.first %}
-                            {{today['today']}}
+                            {{today['today'].date()}}
                             {% else %}{{day.date}}{% endif %}
                             <br>
                             {% if loop.first %}
@@ -164,6 +178,7 @@
                             <!--Цикл для времени-->
                             {% if film_session %}
                             {% for session in film_session %}
+                            {% if session.start_time >= today['today'] %}
                             <div class="session d-flex pr-2 flex-column pb-3">
                                 <div>
                                     <a href="/order/hallplan/{{session.id}}">
@@ -176,6 +191,20 @@
                                     От {{session.price}}
                                 </div>
                             </div>
+                            {% else %}
+                            <div class="session-disabled d-flex pr-2 flex-column pb-3">
+                                <div>
+                                    <a href="/order/hallplan/{{session.id}}">
+                                        {{session.start_time.strftime('%H:%M')}}
+                                    </a>
+                                </div>
+                                <div class="pt-2 text-disabled"
+                                     style="font-size: .7rem;
+                                     text-align: center!important;">
+                                    От {{session.price}}
+                                </div>
+                            </div>
+                            {% endif %}
                             {% endfor %}
                             {% else %}
                             <div class="d-flex pr-2 text_param">
