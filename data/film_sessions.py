@@ -17,6 +17,7 @@ class FilmSession(SqlAlchemyBase, SerializerMixin):
     hall_id = sqlalchemy.Column(sqlalchemy.Integer)
     start_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
     end_time = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
+    s_places = sqlalchemy.Column(sqlalchemy.String, default='0' * 120)
     price = sqlalchemy.Column(sqlalchemy.Integer)
     film = orm.relation('Film')
     places = orm.relation('Place', back_populates='film_session',

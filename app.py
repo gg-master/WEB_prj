@@ -1,9 +1,13 @@
+import math
+import string
+import random
+
 from flask_ngrok import run_with_ngrok
 import os
 import logging
 import pymorphy2
 from requests import post
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from flask import Flask, render_template, request, session, redirect, g
 from flask_restful import Api
 from data.places import Place
@@ -146,8 +150,45 @@ def hallplan(session_id):
 
 @app.route('/make_schedule', methods=['POST'])
 def create_schedule():
-    print('Yahoo')
-    print([i for i in request.values])
+    current_day = datetime.combine(date.today(), datetime.min.time())
+    day = timedelta(days=1)
+    current_time = timedelta(hours=10, minutes=0)
+    while g.db.query(FilmSession).filter(FilmSession.start_time >=
+                                         current_day).first():
+        current_day += day
+    for day in range(7):
+        while current_time <= timedelta(hours=22):
+            film = g.db.query(Film).filter(Film.id ==
+                                           random.randrange(20)).first()
+            hours, minutes = divmod(math.ceil(timedelta(
+                minutes=film.duration)/30)*30, 60)
+            sess_duration = (film.duration + timedelta(
+                hours=hours)).replace(minute=minutes)
+            fs = FilmSession()
+            fs.film_id = film.id
+            fs.hall_id = 1
+            fs.start_time = current_day + current_time
+            fs.end_time = current_day + current_time + sess_duration
+            fs.price = 250
+            g.db.add(fs)
+            g.db.commit()
+            current_time += sess_duration
+            symbols = list(string.ascii_uppercase + string.digits)
+            for i in range(1, 7):
+                for j in range(1, 21):
+                    place = Place(
+                        film_session_id=fs.id,
+                        row_id=i,
+                        seat_id=j,
+                        status=False,
+                        code=''.join(random.sample(symbols, 6))
+                    )
+                    g.db.add(place)
+                    g.db.commit()
+            current_day.replace(hour=0, minute=0)
+            current_day += timedelta(days=1)
+            current_time = timedelta(hours=10)
+
     return redirect('/admin/filmsession/')
 
 

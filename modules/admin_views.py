@@ -56,20 +56,30 @@ class FilmSessionView(ModelView):
     column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
     list_template = 'film_session.html'
     form_excluded_columns = ['places']
+    page_size = 20
 
-    def after_model_change(self, form, model, is_created):
-        symbols = list(string.ascii_uppercase + string.digits)
-        for i in range(1, 7):
-            for j in range(1, 21):
-                place = Place(
-                    film_session_id=model.id,
-                    row_id=i,
-                    seat_id=j,
-                    status=False,
-                    code=''.join(random.sample(symbols, 6))
-                )
-                g.db.add(place)
-                g.db.commit()
+
+    def _s_places_formatter(view, context, model, name):
+        if len(model.s_places) > 10:
+            return model.s_places[:10]
+
+    column_formatters = {
+        's_places': _s_places_formatter
+    }
+
+    # def after_model_change(self, form, model, is_created):
+    #     symbols = list(string.ascii_uppercase + string.digits)
+    #     for i in range(1, 7):
+    #         for j in range(1, 21):
+    #             place = Place(
+    #                 film_session_id=model.id,
+    #                 row_id=i,
+    #                 seat_id=j,
+    #                 status=False,
+    #                 code=''.join(random.sample(symbols, 6))
+    #             )
+    #             g.db.add(place)
+    #             g.db.commit()
 
 
 class PlaceView(ModelView):

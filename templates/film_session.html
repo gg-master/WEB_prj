@@ -1,8 +1,11 @@
 {% extends 'admin/model/list.html' %}
-{% block body %}
-<form action="/make_schedule" method="post">
-<input class="btn btn-primary" id="submit" name="submit" type="submit" value="Сгенерировать расписание">
- </form>
-    <h6> </h6>
+{% block model_menu_bar_after_filters %}
+    <h1> </h1>
+    <form action="/make_schedule" method="post">
+    <input class="btn btn-primary" id="generate" name="submit" type="submit" value="Сгенерировать расписание">
+    </form>
+    <form action="/make_schedule" method="post">
+    <input class="btn btn-primary" id="copy" name="submit" type="submit" value="Продлить расписание">
+    </form>
     {{ super() }}
 {% endblock %}
