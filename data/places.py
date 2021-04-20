@@ -17,7 +17,7 @@ class Place(SqlAlchemyBase, SerializerMixin):
                                                               ".id"))
     row_id = sqlalchemy.Column(sqlalchemy.Integer)
     seat_id = sqlalchemy.Column(sqlalchemy.Integer)
-    status = sqlalchemy.Column(sqlalchemy.Boolean)
+    # status = sqlalchemy.Column(sqlalchemy.Boolean)
     code = sqlalchemy.Column(sqlalchemy.String,
                              default=''.join(random.sample(symbols, 6)))
     film_session = orm.relation('FilmSession')

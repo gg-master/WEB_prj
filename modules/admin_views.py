@@ -83,7 +83,6 @@ class FilmSessionView(ModelView):
 
 class PlaceView(ModelView):
     can_view_details = True
-    column_searchable_list = ['film_session_id', 'row_id', 'seat_id',
-                              'status']
-    column_filters = ['film_session_id', 'row_id', 'seat_id', 'status']
+    column_searchable_list = ['film_session_id', 'row_id', 'seat_id']
+    column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
