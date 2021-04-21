@@ -2,6 +2,7 @@ import math
 import string
 import random
 
+from flask_login import login_user, LoginManager, login_required, logout_user
 from flask_ngrok import run_with_ngrok
 import os
 import logging
@@ -11,12 +12,13 @@ from datetime import datetime, timedelta, date
 from flask import Flask, render_template, request, session, redirect, g
 from flask_restful import Api
 from data.places import Place
-from forms.film import FilmForm
+from forms.admin import LoginForm
 from api import films_resource, films_api, film_session_resource
 from data import db_session
 from data.films import Film
 from data.images import Image
 from data.associations import Genre
+from data.admins import AdminRole
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -24,8 +26,12 @@ from data.film_sessions import FilmSession
 from flask_babelex import Babel
 from babel.dates import format_datetime
 
-from modules.admin_views import FilmSessionView, PlaceView, FilmView
+from modules.admin_views import FilmSessionView, PlaceView, FilmView, \
+    AdminRoleView, AdminView
 from modules.make_order import make_order
+
+
+from flask_basicauth import BasicAuth
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
@@ -34,31 +40,44 @@ app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+# app.config['BASIC_AUTH_USERNAME'] = 'admin2'
+# app.config['BASIC_AUTH_PASSWORD'] = 'admin2'
+
+# basic_auth = BasicAuth(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 babel = Babel(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(AdminRole).get(user_id)
 
 
 # app.config['DEBUG'] = True
 
 
-@app.route('/add_film', methods=['GET', 'POST'])
-def add_film():
-    # TODO Переделать метод для работы с удаленного сервера
-    form = FilmForm()
-    if form.validate_on_submit():
-        data = {'title': form.title.data, 'rating': form.rating.data,
-                'actors': form.actors.data, 'producer': form.producer.data,
-                'premiere': form.premiere.data.strftime('%Y-%m-%d'),
-                'duration': form.duration.data,
-                'description': form.description.data,
-                'poster_url': form.poster_url.data,
-                'trailer_url': form.trailer_url.data, 'watchers': 0,
-                'images': form.images.data.split(', '),
-                'genres': form.genres.data.split(', ')}
-        print(form.genres.data.split(', '))
-        post('http://localhost:5000/api/films', json=data)
-        return redirect("/")
-    return render_template("film_form.html", title="Добавление фильма",
-                           form=form)
+# @app.route('/add_film', methods=['GET', 'POST'])
+# def add_film():
+#     # TODO Переделать метод для работы с удаленного сервера
+#     form = FilmForm()
+#     if form.validate_on_submit():
+#         data = {'title': form.title.data, 'rating': form.rating.data,
+#                 'actors': form.actors.data, 'producer': form.producer.data,
+#                 'premiere': form.premiere.data.strftime('%Y-%m-%d'),
+#                 'duration': form.duration.data,
+#                 'description': form.description.data,
+#                 'poster_url': form.poster_url.data,
+#                 'trailer_url': form.trailer_url.data, 'watchers': 0,
+#                 'images': form.images.data.split(', '),
+#                 'genres': form.genres.data.split(', ')}
+#         print(form.genres.data.split(', '))
+#         post('http://localhost:5000/api/films', json=data)
+#         return redirect("/")
+#     return render_template("film_form.html", title="Добавление фильма",
+#                            form=form)
 
 
 @app.route('/', methods=['GET', "POST"])
@@ -210,6 +229,29 @@ def continue_schedule():
     return redirect('/admin/filmsession/')
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(AdminRole).filter(
+            AdminRole.login == form.login.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
 @babel.localeselector
 def get_locale():
     # Put your logic here. Application can store locale in
@@ -234,13 +276,14 @@ def after_request(response):
 def create_app():
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
-    admin = Admin(app)
+    admin = Admin(app, 'FlaskApp', url='/', index_view=AdminView(name='Home'))
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
     admin.add_view(PlaceView(Place, db_sess, category='Sessions'))
     admin.add_view(FilmView(Film, db_sess, category='Film'))
     admin.add_view(ModelView(Genre, db_sess, category='Film'))
     admin.add_view(ModelView(Image, db_sess, category='Film'))
+    admin.add_view(AdminRoleView(AdminRole, db_sess))
     admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
     app.register_blueprint(films_api.blueprint)
     api.add_resource(films_resource.FilmResource,
@@ -250,6 +293,11 @@ def create_app():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
+    # ad = AdminRole()
+    # ad.login = admin
+    # ad.password = admin
+    # db_sess.add(ad)
+    # db_sess.commit()
     db_sess.close()
     return app
 

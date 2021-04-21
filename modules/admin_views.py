@@ -1,15 +1,25 @@
 import random
 import string
 
+from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask import Markup, g
-
 from data import db_session
 from data.images import Image
-from data.places import Place
+from data.admins import set_password
+from flask_login import current_user
+from flask import redirect
 
 
-class FilmView(ModelView):
+class AdminMixin:
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect('/login')
+
+
+class FilmView(AdminMixin, ModelView):
     can_view_details = True
     # form_columns = ['id', 'title', 'rating', 'actors', 'producer',
     #                           'premiere', 'duration', 'description']
@@ -51,7 +61,7 @@ class FilmView(ModelView):
     }
 
 
-class FilmSessionView(ModelView):
+class FilmSessionView(AdminMixin, ModelView):
     can_view_details = True
     column_searchable_list = ['film_id', 'hall_id', 'start_time', 'end_time',
                               'price']
@@ -67,24 +77,44 @@ class FilmSessionView(ModelView):
     column_formatters = {
         's_places': _s_places_formatter
     }
+    #
+    # # def after_model_change(self, form, model, is_created):
+    # #     symbols = list(string.ascii_uppercase + string.digits)
+    # #     for i in range(1, 7):
+    # #         for j in range(1, 21):
+    # #             place = Place(
+    # #                 film_session_id=model.id,
+    # #                 row_id=i,
+    # #                 seat_id=j,
+    # #                 status=False,
+    # #                 code=''.join(random.sample(symbols, 6))
+    # #             )
+    # #             g.db.add(place)
+    # #             g.db.commit()
 
-    # def after_model_change(self, form, model, is_created):
-    #     symbols = list(string.ascii_uppercase + string.digits)
-    #     for i in range(1, 7):
-    #         for j in range(1, 21):
-    #             place = Place(
-    #                 film_session_id=model.id,
-    #                 row_id=i,
-    #                 seat_id=j,
-    #                 status=False,
-    #                 code=''.join(random.sample(symbols, 6))
-    #             )
-    #             g.db.add(place)
-    #             g.db.commit()
 
-
-class PlaceView(ModelView):
+class PlaceView(AdminMixin, ModelView):
     can_view_details = True
     column_searchable_list = ['film_session_id', 'row_id', 'seat_id']
     column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
+
+
+class AdminRoleView(AdminMixin, ModelView):
+    can_edit = False
+    can_delete = False
+
+    def on_model_change(self, form, model, is_created):
+        model.hashed_password = set_password(model.hashed_password)
+
+
+class GenreView(AdminMixin, ModelView):
+    pass
+
+
+class ImageView(AdminMixin, ModelView):
+    pass
+
+
+class AdminView(AdminMixin, AdminIndexView):
+    pass
