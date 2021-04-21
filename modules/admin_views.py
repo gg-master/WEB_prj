@@ -1,10 +1,6 @@
-import random
-import string
-
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-from flask import Markup, g
-from data import db_session
+from flask import Markup
 from data.images import Image
 from data.admins import set_password
 from flask_login import current_user
