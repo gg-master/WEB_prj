@@ -200,7 +200,7 @@ def login():
         user = g.db.query(AdminRole).filter(
             AdminRole.login == form.login.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=form.remember_me.data)
             return redirect("/admin/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -232,9 +232,10 @@ def get_locale():
 def before_request():
     # print('opening connection')
     g.db = db_session.create_session()
-    if all(map(lambda x: x not in request.path,
-           ['admin', 'login', 'logout'])) and current_user.is_authenticated:
-        logout_user()
+    # Фишка автовыхода админа при выходе из админки
+    # if all(map(lambda x: x not in request.path,
+    #        ['admin', 'login', 'logout'])) and current_user.is_authenticated:
+    #     logout_user()
 
 
 @app.after_request
