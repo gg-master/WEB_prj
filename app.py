@@ -249,7 +249,7 @@ def after_request(response):
 def create_app():
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
-    admin = Admin(app, 'FilmCenter', url='/', index_view=AdminView(name='Home'))
+    admin = Admin(app, 'FilmCenter', url='/', index_view=AdminView())
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
     admin.add_view(PlaceView(Place, db_sess, category='Sessions'))
