@@ -85,18 +85,20 @@ class FilmSessionView(AdminMixin, ModelView):
 
 class PlaceView(AdminMixin, ModelView):
     can_view_details = True
-    column_list = ['id', 'film_session_id', 'row_id', 'seat_id']
-    column_sortable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
-    column_searchable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
+    column_list = ['id', 'film_session_id', 'row_id', 'seat_id', 'code']
+    column_sortable_list = ['id', 'film_session_id', 'row_id', 'seat_id',
+                            'code']
+    column_searchable_list = ['id', 'film_session_id', 'row_id', 'seat_id',
+                              'code']
     column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
 
     def on_model_delete(self, model):
         fs = g.db.query(FilmSession).filter(FilmSession.id ==
                                             model.film_session_id).first()
-        fs.s_places = fs.s_places[:(model.row_id - 1) * 20 +
-                                   model.seat_id - 1] + '0' + \
-                      fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
+        fs.s_places = fs.s_places[
+                      :(model.row_id - 1) * 20 + model.seat_id - 1] + '0'\
+            + fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
         g.db.commit()
 
 
