@@ -124,4 +124,6 @@ class ImageView(AdminMixin, ModelView):
 
 
 class AdminView(AdminMixin, AdminIndexView):
-    pass
+    def is_visible(self):
+        # This view won't appear in the menu structure
+        return False
