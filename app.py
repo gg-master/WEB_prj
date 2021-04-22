@@ -3,7 +3,7 @@ import random
 
 from flask_ngrok import run_with_ngrok
 from flask_login import login_user, LoginManager, login_required, \
-    logout_user, current_user
+    logout_user
 import os
 import logging
 import pymorphy2
@@ -130,6 +130,7 @@ def hallplan(session_id):
 
 @app.route('/make_schedule', methods=['POST'])
 def create_schedule():
+    """Создание расписания на неделю"""
     current_day = datetime.combine(date.today(), datetime.min.time())
     day = timedelta(days=1)
     current_time = timedelta(hours=10, minutes=0)
@@ -144,8 +145,6 @@ def create_schedule():
                                                film_id).first()
                 if not film:
                     continue
-                # print(film_id)
-                # print(film.duration)
                 hours, minutes = divmod(math.ceil(film.duration / 30) * 30, 60)
                 sess_duration = timedelta(hours=hours, minutes=minutes)
                 fs = FilmSession()
@@ -155,9 +154,7 @@ def create_schedule():
                 fs.end_time = current_day + current_time + sess_duration
                 fs.price = 250
                 g.db.add(fs)
-                # print('Current time before:  ', current_time)
                 current_time += sess_duration
-                # print('Current time after:  ', current_time)
             current_time = timedelta(hours=10, minutes=0)
         current_day.replace(hour=0, minute=0)
         current_day += timedelta(days=1)
@@ -167,6 +164,7 @@ def create_schedule():
 
 @app.route('/continue_schedule', methods=['POST'])
 def continue_schedule():
+    """Продление расписания на неделю"""
     current_day = datetime.combine(date.today(), datetime.min.time())
     day = timedelta(days=1)
     while g.db.query(FilmSession).filter(FilmSession.start_time >=
@@ -177,15 +175,11 @@ def continue_schedule():
         if not f:
             delta = current_day - i.start_time
             delta = timedelta(days=delta.days + 1)
-            # print('delta:  ', delta)
             f = True
         fs = FilmSession()
         fs.film_id = i.film_id
         fs.hall_id = i.hall_id
-        # print('cr:  ', current_day)
         fs.start_time = i.start_time + delta
-        # print('i: ', i.start_time)
-        # print('fs: ', fs.start_time)
         fs.end_time = i.end_time + delta
         fs.price = i.price
         g.db.add(fs)
@@ -195,6 +189,7 @@ def continue_schedule():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Вход пользователя в аккаунт администратора"""
     form = LoginForm()
     if form.validate_on_submit():
         user = g.db.query(AdminRole).filter(
@@ -223,8 +218,7 @@ def logout():
 
 @babel.localeselector
 def get_locale():
-    # Put your logic here. Application can store locale in
-    # user profile, cookie, session, etc.
+    """Русификация админки"""
     return 'ru'
 
 
@@ -232,10 +226,6 @@ def get_locale():
 def before_request():
     # print('opening connection')
     g.db = db_session.create_session()
-    # Фишка автовыхода админа при выходе из админки
-    # if all(map(lambda x: x not in request.path,
-    #        ['admin', 'login', 'logout'])) and current_user.is_authenticated:
-    #     logout_user()
 
 
 @app.after_request
@@ -247,6 +237,7 @@ def after_request(response):
 
 
 def create_app():
+    """Создание приложения"""
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
     admin = Admin(app, 'FilmCenter', url='/', index_view=AdminView())

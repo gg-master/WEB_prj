@@ -1,10 +1,6 @@
-import random
-import string
-
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask import Markup, g
-from data import db_session
 from data.film_sessions import FilmSession
 from data.images import Image
 from data.admins import set_password
@@ -22,11 +18,13 @@ class AdminMixin:
 
 class FilmView(AdminMixin, ModelView):
     can_view_details = True
-    # form_columns = ['id', 'title', 'rating', 'actors', 'producer',
-    #                           'premiere', 'duration', 'description']
-    column_searchable_list = ['title', 'rating', 'actors', 'producer',
+    column_list = ['id', 'title', 'rating', 'actors', 'producer',
+                   'premiere', 'duration', 'description']
+    column_sortable_list = ['id', 'title', 'rating', 'actors', 'producer',
+                            'premiere', 'duration', 'description']
+    column_searchable_list = ['id', 'title', 'rating', 'actors', 'producer',
                               'premiere', 'duration', 'description']
-    column_filters = ['title', 'rating', 'premiere', 'duration']
+    column_filters = ['id', 'title', 'rating', 'premiere', 'duration']
     form_excluded_columns = ['film_session']
     inline_models = [(Image, dict(form_columns=['id', 'image_url']))]
 
@@ -64,9 +62,14 @@ class FilmView(AdminMixin, ModelView):
 
 class FilmSessionView(AdminMixin, ModelView):
     can_view_details = True
-    column_searchable_list = ['film_id', 'hall_id', 'start_time', 'end_time',
-                              'price']
-    column_filters = ['film_id', 'hall_id', 'start_time', 'end_time', 'price']
+    column_list = ['id', 'film_id', 'hall_id', 'start_time', 'end_time',
+                   'price']
+    column_sortable_list = ['id', 'film_id', 'hall_id', 'start_time',
+                            'end_time', 'price']
+    column_searchable_list = ['id', 'film_id', 'hall_id', 'start_time',
+                              'end_time', 'price']
+    column_filters = ['id', 'film_id', 'hall_id', 'start_time', 'end_time',
+                      'price']
     list_template = 'film_session.html'
     form_excluded_columns = ['places']
     page_size = 213
@@ -78,32 +81,22 @@ class FilmSessionView(AdminMixin, ModelView):
     column_formatters = {
         's_places': _s_places_formatter
     }
-    #
-    # # def after_model_change(self, form, model, is_created):
-    # #     symbols = list(string.ascii_uppercase + string.digits)
-    # #     for i in range(1, 7):
-    # #         for j in range(1, 21):
-    # #             place = Place(
-    # #                 film_session_id=model.id,
-    # #                 row_id=i,
-    # #                 seat_id=j,
-    # #                 status=False,
-    # #                 code=''.join(random.sample(symbols, 6))
-    # #             )
-    # #             g.db.add(place)
-    # #             g.db.commit()
 
 
 class PlaceView(AdminMixin, ModelView):
     can_view_details = True
-    column_searchable_list = ['film_session_id', 'row_id', 'seat_id']
+    column_list = ['id', 'film_session_id', 'row_id', 'seat_id']
+    column_sortable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
+    column_searchable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
     column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
 
     def on_model_delete(self, model):
         fs = g.db.query(FilmSession).filter(FilmSession.id ==
                                             model.film_session_id).first()
-        fs.s_places = fs.s_places[:(model.row_id - 1) * 20 + model.seat_id - 1] + '0' + fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
+        fs.s_places = fs.s_places[:(model.row_id - 1) * 20 +
+                                   model.seat_id - 1] + '0' + \
+                      fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
         g.db.commit()
 
 
@@ -125,5 +118,4 @@ class ImageView(AdminMixin, ModelView):
 
 class AdminView(AdminMixin, AdminIndexView):
     def is_visible(self):
-        # This view won't appear in the menu structure
         return False
