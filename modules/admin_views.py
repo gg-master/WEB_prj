@@ -5,6 +5,7 @@ from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask import Markup, g
 from data import db_session
+from data.film_sessions import FilmSession
 from data.images import Image
 from data.admins import set_password
 from flask_login import current_user
@@ -98,6 +99,13 @@ class PlaceView(AdminMixin, ModelView):
     column_searchable_list = ['film_session_id', 'row_id', 'seat_id']
     column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
+
+    def on_model_delete(self, model):
+        fs = g.db.query(FilmSession).filter(FilmSession.id ==
+                                            model.film_session_id).first()
+        fs.s_places = fs.s_places[:(model.row_id - 1) * 20 + model.seat_id - 1] + '0' + fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
+        # fs.s_places = '0' + fs.s_places[1:]
+        g.db.commit()
 
 
 class AdminRoleView(AdminMixin, ModelView):
