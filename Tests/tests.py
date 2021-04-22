@@ -14,3 +14,7 @@ def test_films_api():
     assert all(map(lambda x: x in resp, arr))
 
 
+def test_film_abort():
+    resp = requests.get(
+        f'http://{domain}/api/films/199').json()
+    assert 'message' in resp and 'not found' in resp['message']
