@@ -1,6 +1,5 @@
 import math
 import random
-
 from flask_ngrok import run_with_ngrok
 from flask_login import login_user, LoginManager, login_required, \
     logout_user
@@ -24,7 +23,6 @@ from flask_admin.contrib.fileadmin import FileAdmin
 from data.film_sessions import FilmSession
 from flask_babelex import Babel
 from babel.dates import format_datetime
-
 from modules.admin_views import FilmSessionView, PlaceView, FilmView, \
     AdminRoleView, AdminView
 from modules.make_order import make_order

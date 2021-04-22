@@ -1,8 +1,6 @@
 from datetime import datetime
-
 from flask import jsonify, g
 from flask_restful import Resource, reqparse
-
 from data.film_sessions import FilmSession
 from misc.aborts import abort_if_film_sess_not_found
 

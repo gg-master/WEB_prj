@@ -1,16 +1,15 @@
 import os
-
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
-
 import logging
-
 from sqlalchemy.pool import NullPool
 
+
 SqlAlchemyBase = dec.declarative_base()
+
 
 __factory = None
 

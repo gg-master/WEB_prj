@@ -1,10 +1,8 @@
 from datetime import datetime, date
-
 import flask
 from flask import jsonify, request, g
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_
-
 from data.associations import Genre
 from data.films import Film
 

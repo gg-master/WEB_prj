@@ -3,6 +3,7 @@ import os
 from PIL import Image, ImageFont, ImageDraw
 import qrcode
 
+
 path_for_system_img = 'static/img/'
 
 

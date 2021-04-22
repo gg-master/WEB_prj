@@ -1,4 +1,3 @@
-import string
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 import random
@@ -8,6 +7,7 @@ import string
 
 
 def generate_code():
+    """Генерация уникального кода"""
     symbols = list(string.ascii_uppercase + string.digits)
     return ''.join(random.sample(symbols, 6))
 
@@ -15,7 +15,6 @@ def generate_code():
 class Place(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'place'
     symbols = string.ascii_uppercase + string.digits
-    # random.shuffle(symbols)
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     film_session_id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -23,7 +22,6 @@ class Place(SqlAlchemyBase, SerializerMixin):
                                                               ".id"))
     row_id = sqlalchemy.Column(sqlalchemy.Integer)
     seat_id = sqlalchemy.Column(sqlalchemy.Integer)
-    # status = sqlalchemy.Column(sqlalchemy.Boolean)
     code = sqlalchemy.Column(sqlalchemy.String,
                              default=generate_code)
     film_session = orm.relation('FilmSession')

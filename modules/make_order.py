@@ -1,8 +1,5 @@
 import threading
-
-import requests
 from flask import request, session, g
-
 from api.film_session_resource import FilmSessionResource
 from api.films_resource import FilmResource
 from data.places import Place, generate_code

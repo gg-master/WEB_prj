@@ -1,15 +1,11 @@
-from datetime import datetime
-
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
-
 from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
 class FilmSession(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'film_sessions'
-
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     film_id = sqlalchemy.Column(sqlalchemy.Integer,

@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
-
 from .db_session import SqlAlchemyBase
+
 
 assoc_film_genre = sqlalchemy.Table(
     'association_film_genres',
@@ -9,8 +9,7 @@ assoc_film_genre = sqlalchemy.Table(
     sqlalchemy.Column('films', sqlalchemy.Integer,
                       sqlalchemy.ForeignKey('films.id')),
     sqlalchemy.Column('genres', sqlalchemy.Integer,
-                      sqlalchemy.ForeignKey('genres.id'))
-)
+                      sqlalchemy.ForeignKey('genres.id')))
 
 
 class Genre(SqlAlchemyBase, SerializerMixin):

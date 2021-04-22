@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-
 from data import db_session
 from data.film_sessions import FilmSession
 from data.places import Place

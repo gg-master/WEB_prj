@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-
 from misc.session_scheduler import delete_film_session_every_week
+
 
 sched = BackgroundScheduler({'apscheduler.timezone': 'UTC'})
 

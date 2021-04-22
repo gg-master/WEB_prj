@@ -1,9 +1,8 @@
 import logging
-
 from data import db_session
 from apscheduler.schedulers.blocking import BlockingScheduler
-
 from misc.session_scheduler import delete_film_session_every_week
+
 
 sched = BlockingScheduler({'apscheduler.timezone': 'UTC'})
 
