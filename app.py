@@ -1,13 +1,12 @@
 import math
-import string
 import random
 
-from flask_login import login_user, LoginManager, login_required, logout_user
 from flask_ngrok import run_with_ngrok
+from flask_login import login_user, LoginManager, login_required, \
+    logout_user, current_user
 import os
 import logging
 import pymorphy2
-from requests import post
 from datetime import datetime, timedelta, date
 from flask import Flask, render_template, request, session, redirect, g
 from flask_restful import Api
@@ -30,9 +29,6 @@ from modules.admin_views import FilmSessionView, PlaceView, FilmView, \
     AdminRoleView, AdminView
 from modules.make_order import make_order
 
-
-from flask_basicauth import BasicAuth
-
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
@@ -40,44 +36,12 @@ app = Flask(__name__)
 api = Api(app)
 # run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-# app.config['BASIC_AUTH_USERNAME'] = 'admin2'
-# app.config['BASIC_AUTH_PASSWORD'] = 'admin2'
-
-# basic_auth = BasicAuth(app)
+# app.config['DEBUG'] = True
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 babel = Babel(app)
-
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(AdminRole).get(user_id)
-
-
-# app.config['DEBUG'] = True
-
-
-# @app.route('/add_film', methods=['GET', 'POST'])
-# def add_film():
-#     # TODO Переделать метод для работы с удаленного сервера
-#     form = FilmForm()
-#     if form.validate_on_submit():
-#         data = {'title': form.title.data, 'rating': form.rating.data,
-#                 'actors': form.actors.data, 'producer': form.producer.data,
-#                 'premiere': form.premiere.data.strftime('%Y-%m-%d'),
-#                 'duration': form.duration.data,
-#                 'description': form.description.data,
-#                 'poster_url': form.poster_url.data,
-#                 'trailer_url': form.trailer_url.data, 'watchers': 0,
-#                 'images': form.images.data.split(', '),
-#                 'genres': form.genres.data.split(', ')}
-#         print(form.genres.data.split(', '))
-#         post('http://localhost:5000/api/films', json=data)
-#         return redirect("/")
-#     return render_template("film_form.html", title="Добавление фильма",
-#                            form=form)
 
 
 @app.route('/', methods=['GET', "POST"])
@@ -233,16 +197,21 @@ def continue_schedule():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(AdminRole).filter(
+        user = g.db.query(AdminRole).filter(
             AdminRole.login == form.login.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/")
+            return redirect("/admin/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    with db_session.create_session() as db_sess:
+        return db_sess.query(AdminRole).get(user_id)
 
 
 @app.route('/logout')
@@ -263,6 +232,10 @@ def get_locale():
 def before_request():
     # print('opening connection')
     g.db = db_session.create_session()
+    # Фишка автовыхода админа при выходе из админки
+    # if all(map(lambda x: x not in request.path,
+    #        ['admin', 'login', 'logout'])) and current_user.is_authenticated:
+    #     logout_user()
 
 
 @app.after_request
@@ -276,7 +249,7 @@ def after_request(response):
 def create_app():
     path = os.path.join(os.path.dirname(__file__), 'static')
     db_session.global_init('connect_to_db_in_db_session_file')
-    admin = Admin(app, 'FlaskApp', url='/', index_view=AdminView(name='Home'))
+    admin = Admin(app, 'FlaskApp', index_view=AdminView(name='Home'))
     db_sess = db_session.create_session()
     admin.add_view(FilmSessionView(FilmSession, db_sess, category='Sessions'))
     admin.add_view(PlaceView(Place, db_sess, category='Sessions'))
@@ -293,11 +266,6 @@ def create_app():
                      '/api/film_sessions/<int:film_sess_id>')
     api.add_resource(film_session_resource.FilmSessionListResource,
                      '/api/film_sessions')
-    # ad = AdminRole()
-    # ad.login = admin
-    # ad.password = admin
-    # db_sess.add(ad)
-    # db_sess.commit()
     db_sess.close()
     return app
 

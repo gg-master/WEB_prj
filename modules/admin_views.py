@@ -104,7 +104,6 @@ class PlaceView(AdminMixin, ModelView):
         fs = g.db.query(FilmSession).filter(FilmSession.id ==
                                             model.film_session_id).first()
         fs.s_places = fs.s_places[:(model.row_id - 1) * 20 + model.seat_id - 1] + '0' + fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
-        # fs.s_places = '0' + fs.s_places[1:]
         g.db.commit()
 
 
