@@ -75,6 +75,22 @@ def get_filter_data():
 
 @blueprint.route('/api/films/filtered', methods=['GET'])
 def get_filtered_films():
+    # Данные для запроса должны передаваться в параметр data.
+    """
+    example data = {
+        'title': 'something',
+        'year_cb': 'on',
+        'year': 2021,
+        'genre_cb': 'on',
+        'genre': 'военный'
+    }
+    Только поиск по названию работает через просто указание ключа и значения.
+    Для остальных параметров (genre, year, duration, producer),
+     необходимо указать два параметра:
+        1) 'nameParam_cb' - like 'genre_cb' etc.
+        2) 'nameParam': value
+    :return: json with filtered films
+    """
     # Перебираем указанные параметры в форме и составляем
     # словарь параметров, по которым требуется найти фильм
     filtered_params = {}
