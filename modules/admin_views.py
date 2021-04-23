@@ -94,9 +94,9 @@ class PlaceView(AdminMixin, ModelView):
     def on_model_delete(self, model):
         fs = g.db.query(FilmSession).filter(FilmSession.id ==
                                             model.film_session_id).first()
-        fs.s_places = fs.s_places[:(model.row_id - 1) * 20 +
-                                   model.seat_id - 1] + '0' + \
-                      fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
+        fs.s_places = fs.s_places[
+                      :(model.row_id - 1) * 20 + model.seat_id - 1] + '0'\
+            + fs.s_places[(model.row_id - 1) * 20 + model.seat_id:]
         g.db.commit()
 
 

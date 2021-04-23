@@ -1,6 +1,5 @@
 import math
 import random
-from flask_ngrok import run_with_ngrok
 from flask_login import login_user, LoginManager, login_required, \
     logout_user
 import os
@@ -260,7 +259,7 @@ def create_app():
 
 
 if __name__ == '__main__':
-    import background_clock
+    from modules import background_clock
 
     create_app()
     # port = int(os.environ.get("PORT", 5000))
