@@ -86,10 +86,8 @@ class FilmSessionView(AdminMixin, ModelView):
 class PlaceView(AdminMixin, ModelView):
     can_view_details = True
     column_list = ['id', 'film_session_id', 'row_id', 'seat_id', 'code']
-    column_sortable_list = ['id', 'film_session_id', 'row_id', 'seat_id',
-                            'code']
-    column_searchable_list = ['id', 'film_session_id', 'row_id', 'seat_id',
-                              'code']
+    column_sortable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
+    column_searchable_list = ['id', 'film_session_id', 'row_id', 'seat_id']
     column_filters = ['film_session_id', 'row_id', 'seat_id']
     page_size = 20
 
