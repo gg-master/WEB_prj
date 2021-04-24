@@ -142,3 +142,5 @@ dmypy.json
 
 *.ini
 alembic/
+/Защита/
+/db/
