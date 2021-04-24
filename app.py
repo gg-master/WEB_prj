@@ -41,6 +41,11 @@ login_manager.init_app(app)
 babel = Babel(app)
 
 
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
+
+
 @app.route('/', methods=['GET', "POST"])
 def start_page():
     # Инициализация сессии к бд
