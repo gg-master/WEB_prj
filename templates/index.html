@@ -123,6 +123,7 @@
     </div>
 </div>
 {% if not filtered %}
+{% if new_films %}
 <ul class="container" style="padding-right: 0.5%; margin-top: 2%">
     <li style="display: inline-block; width: 48%; height: 100%">
         <div class="card"
@@ -246,6 +247,68 @@
     </li>
 
 </ul>
+{% else %}
+<div class="container" style="margin-top: 2%">
+    <div class="card"
+         style="background-color: rgba(150, 150, 150, 0.5);
+     color: white; border-color: white;">
+        <div class="card-body">
+            <h5 class="card-title"
+                style="margin-bottom: 2%; padding-top: 0">
+                Топ популярных фильмов</h5>
+            <div id="carouselNewFilm" class="carousel slide"
+                 data-ride="carousel">
+                <div class="carousel-inner rounded">
+                    {% for film in most_watched_films %}
+                    {% if loop.first%}
+                    <div class="carousel-item active"
+                         data-interval="5000">
+                        {% else %}
+                        <div class="carousel-item"
+                             data-interval="5000">
+                            {% endif %}
+                            <div class="toplayer rounded"
+                                 align="center">
+                                <a href="/films/{{film.id}}"
+                                   class="d-block w-100">
+                                    {% if film.poster_url == None %}
+                                    <img src="/static/img/none_img.jpg"
+                                         class="img-fluid rounded"
+                                         alt=""
+                                         style="height: 200px;">
+                                    {% else %}
+                                    <img src="{{ film.poster_url }}"
+                                         class="img-fluid rounded"
+                                         alt=""
+                                         style="height: 200px;">
+                                    {% endif %}
+                                </a>
+                                <h5 style="margin-top: 1%; margin-bottom: 0">
+                                    {{film.title}}</h5>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a class="carousel-control-prev"
+                       href="#carouselNewFilm"
+                       role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon"
+                  aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next"
+                       href="#carouselNewFilm"
+                       role="button" data-slide="next">
+            <span class="carousel-control-next-icon"
+                  aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endif %}
 <div style="clear: left"></div>
 <link rel='stylesheet' type='text/css'
