@@ -27,14 +27,14 @@ def global_init(db_file):
     if os.path.exists(path):
         load_dotenv(path)
     try:
-        postgresql = os.environ.get('POSTGRESQL')
-        if postgresql is None:
-            raise AttributeError("param postgresql is 'NoneType'")
+        sqlite = os.environ.get('SQLITE')
+        if sqlite is None:
+            raise AttributeError("param sqlite is 'NoneType'")
     except Exception as ex:
         logging.error(f'Probably not found .env file'
                       f'\nEXCEPTION: {ex}')
         return None
-    conn_str = postgresql
+    conn_str = sqlite
     # conn_str = f'sqlite:///db/database.db?check_same_thread=False'
     # print(f"Подключение к базе данных по адресу {conn_str}")
     logging.info(f"Подключение к базе данных по адресу {conn_str}")
