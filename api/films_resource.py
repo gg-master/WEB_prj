@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import jsonify, g
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
 from data.associations import Genre
 from data.films import Film
 from data.images import Image
@@ -61,18 +61,28 @@ class FilmResource(Resource):
         film.trailer_url = args['trailer_url']
         film.watchers = args['watchers']
         if args['premiere']:
-            film.premiere = datetime.fromisoformat(args['premiere'])
+            try:
+                # Если дата премьеры введено неправильно, то вызываем аборт
+                film.premiere = datetime.fromisoformat(args['premiere'])
+            except Exception as ex:
+                abort(400, message='The premiere date was entered '
+                                   'incorrectly. Required format '
+                                   'year-month-day')
         genres = list(map(lambda x: x.lower(), args['genres']))
         for genre_name in genres:
+            # Узнаем есть ли жанр в бд
             genre = g.db.query(Genre).filter(
                 Genre.name == genre_name).first()
+            # Если жанра нет, то создаем его
             if genre is None:
                 genre = Genre()
                 genre.name = genre_name
             film.genre.append(genre)
         for image_url in args['images']:
+            # Узнаем есть ли картинка в бд
             image = g.db.query(Image).filter(
                 Image.image_url == image_url).first()
+            # Если картинки нет, то создаем ее
             if image is None:
                 image = Image()
                 image.image_url = image_url
@@ -104,18 +114,28 @@ class FilmListResource(Resource):
             watchers=args['watchers']
         )
         if args['premiere']:
-            film.premiere = datetime.fromisoformat(args['premiere'])
+            try:
+                # Если дата премьеры введено неправильно, то вызываем аборт
+                film.premiere = datetime.fromisoformat(args['premiere'])
+            except Exception as ex:
+                abort(400, message='The premiere date was entered '
+                                   'incorrectly. Required format '
+                                   'year-month-day')
         genres = list(map(lambda x: x.lower(), args['genres']))
         for genre_name in genres:
+            # Узнаем есть ли жанр в бд
             genre = g.db.query(Genre).filter(
                 Genre.name == genre_name).first()
+            # Если жанра нет, то создаем его
             if genre is None:
                 genre = Genre()
                 genre.name = genre_name
             film.genre.append(genre)
         for image_url in args['images']:
+            # Узнаем есть ли картинка в бд
             image = g.db.query(Image).filter(
                 Image.image_url == image_url).first()
+            # Если картинки нет, то создаем ее
             if image is None:
                 image = Image()
                 image.image_url = image_url

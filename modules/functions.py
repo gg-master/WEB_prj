@@ -2,6 +2,7 @@ from data import db_session
 
 
 def create_admin():
+    # Регистрация админа
     from data.admins import AdminRole, set_password
     with db_session.create_session() as db_sess:
         ad = AdminRole()

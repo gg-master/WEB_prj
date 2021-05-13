@@ -6,6 +6,7 @@ from data.places import Place
 
 
 def delete_film_session_every_week():
+    # Удаление сессий на фильмы, которые прошли более чем неделю назад
     logging.info('Starting delete_film_session_every_week')
     with db_session.create_session() as db_sess:
         current_time_minus_week = datetime.now() - timedelta(weeks=1)

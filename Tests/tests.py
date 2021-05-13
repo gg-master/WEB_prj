@@ -5,8 +5,8 @@ import requests
 
 logging.basicConfig(level=logging.INFO)
 
-# domain = 'localhost:5000'
-domain = 'film-center-prj.herokuapp.com'
+domain = 'localhost:5000'
+# domain = 'film-center-prj.herokuapp.com'
 
 
 def test_films_api():
@@ -37,15 +37,12 @@ def test_filtered_films():
 
 
 def test_film_search():
-    # TODO функция не для теста. Нужно переписать для работы с pytest
+    title = 'Иван Васильевич меняет профессию'
     data = {
         'genre_cb': 'on',
-        'genre': 'биография'
+        'genre': 'комедия'
     }
     resp = requests.get(
         f'http://{domain}/api/films/filtered', data=data).json()
     pprint.pprint(resp)
-
-
-# TODO убрать вызов после корректировки функции
-test_film_search()
+    assert map(lambda x: x['title'] == title, resp['films'])
